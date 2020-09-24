@@ -5,20 +5,30 @@ close all
 % rng('default');
 % rng(1);
 
-P = 20;    % # nodes simulated; for current setting o
+% # nodes simulated
+P = 2;    
+
+% time in days
 t_start = 0;
-t_stop = 2;
-timestep = 0.01;
+t_stop = 7;
+timestep = 0.25;
 
 %select input evaluation function
 eval_u = 'GenInputVec';
 
-theta = GenThetaMat(P);
-%x_start = GenStateVec(P);
-%x_start = transpose(reshape(cell2mat(GenInputVec(P, 0)), [4, P]));
+%generate Theta matrix of Theta[i,k] representing 
+%the rate at which individuals move from node k to node i. 
+%Units of [time-1].
+theta = GenThetaMat(P, 'symmetric');
 
 %start state at time 0 equals input vector at time 0
 x_start = GenInputVec(P, 0);
+
+%generate parameters beta, sigma, gamme, and theta
+%beta[i] the probability of disease transmitting from an infectious individual to a susceptible individual 
+%sigma[i] the rate of exposed individuals becoming infectious
+%gamme[i] the rate at which individuals recover (or die)
+%theta[i,k] the rate at which individuals move from node k to node i.
 p = GenPStruct(P, theta);
 
 %select model evaluation function
