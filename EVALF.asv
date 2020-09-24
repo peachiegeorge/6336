@@ -25,9 +25,9 @@ xMat = [x{1:end}];
 
 for i = 1:P % For each node
     % Calculate inter-node flows
-    Ms(i) = CalcMs(p(i).theta, xMat(1,1:end-1)');
-    Me(i) = CalcMe(p(i).theta, xMat(2,1:end-1)');
-    Mi(i) = CalcMi(p(i).theta, xMat(3,1:end-1)');
+    Ms(i) = CalcMs(p(i).theta, xMat(1,1:end)');
+    Me(i) = CalcMe(p(i).theta, xMat(2,1:end)');
+    Mi(i) = CalcMi(p(i).theta, xMat(3,1:end)');
     
     % Calculate intra-node flows
     Qs(i) = CalcQs(p(i).beta,  x{i}(1), x{i}(3));
@@ -43,18 +43,28 @@ end
 end
 
 function Qs = CalcQs(beta,S,I)
+if S < 0 || I < 0
+    Qs = 0;
+end
 Qs = beta*S*I;
 end
 
 function Ms = CalcMs(theta,S)
+if S < 0
+    Ms = 0;
+end
 Ms = theta*S;
 end
 
 function Qe = CalcQe(sigma,E)
+if E < 0
+    Qe = 0;
+end
 Qe = sigma*E;
 end
 
 function Me = CalcMe(theta,E)
+if E 
 Me = theta*E;
 end
 

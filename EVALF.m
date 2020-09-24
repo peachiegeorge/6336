@@ -43,25 +43,43 @@ end
 end
 
 function Qs = CalcQs(beta,S,I)
+if S < 0 || I < 0
+    Qs = 0;
+end
 Qs = beta*S*I;
 end
 
 function Ms = CalcMs(theta,S)
+if S < 0
+    Ms = 0;
+end
 Ms = theta*S;
 end
 
 function Qe = CalcQe(sigma,E)
+if E < 0
+    Qe = 0;
+end
 Qe = sigma*E;
 end
 
 function Me = CalcMe(theta,E)
+if E < 0
+    Me = 0;
+end
 Me = theta*E;
 end
 
 function Qi = CalcQi(gamma,I)
+if I < 0
+    Qi = 0;
+end
 Qi = gamma*I;
 end
 
 function Mi = CalcMi(theta,I)
+if I < 0
+    Mi = 0;
+end
 Mi = theta*I;
 end
