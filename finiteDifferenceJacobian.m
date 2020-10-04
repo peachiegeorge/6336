@@ -1,10 +1,4 @@
-function[Jf_u, Jf_x] = finiteDifferenceJacobian()
-
-P = 100;    % # nodes simulated
-theta = GenThetaMat(P, 'symmetric');
-x = GenStateVec(P, 'else'); % Operating point is about 0
-p = GenPStruct(P,theta);
-u = GenInputVec(P, 0); % Linearization operating point, t=0
+function[Jf_u, Jf_x] = finiteDifferenceJacobian(x,p,u)
 epsilonX = 1;
 epsilonU = 1;
 
