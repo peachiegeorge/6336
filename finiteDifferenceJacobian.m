@@ -5,14 +5,19 @@ theta = GenThetaMat(P, 'symmetric');
 x = GenStateVec(P, 'else'); % Operating point is about 0
 p = GenPStruct(P,theta);
 u = GenInputVec(P, 0); % t = 0 input 
-epsilonX = 1;
-epsilonU = 1;
+epsilonX = cell(P,1);
+epsilonU = cell(P,1);
+for i = 1:P
+        epsilonX{i} = ones(4,1);
+        epsilonU{i} = ones(4,1);
+end
 
 numNodes = size(x,1);
 numEquations= size(x,1)*4;
 
 Jf_u = zeros(numEquations,numEquations);
 Jf_x = zeros(numEquations,numEquations);
+
 
 for ind = 1:numNodes
     for eq = 1:4
