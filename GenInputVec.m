@@ -13,7 +13,7 @@ if t == 0
     I0(N0<I0) = I0(N0<I0) - reduceAmnt; % If N0 < I0, reduce # of infected
     % At least have one infected
     if (I0 < 1)
-        I0 = I0 + 1000;
+        I0 = I0 + I_MAX;
     end
     uM = [N0-I0, zeros(P,1), I0, zeros(P,1)]';
     u = num2cell(uM,1)';
