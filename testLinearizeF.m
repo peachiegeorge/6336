@@ -95,7 +95,7 @@ set(gcf,'position',[286   678   379   300]);
 
 figure;
 imagesc(testX4);
-title('Random Inputs');
+title('Random States');
 xlabel('n');
 ylabel('Node');
 colorbar;
@@ -140,9 +140,9 @@ doCellOps = true;
 
 testX5 = GenStateVec(P, 'sameIC');
 testU5 = u0;
-testF5 = cell2vec(feval(f5,testX5,p,testU5));    % Analytic solution
-testX5Vec = cell2vec(testX5);
-testU5Vec = cell2vec(testU5);
+testF5 = cell2vec(feval(f5,testX5,p,testU5),1);    % Analytic solution
+testX5Vec = cell2vec(testX5,1);
+testU5Vec = cell2vec(testU5,1);
 testF5Jacobian = A5*testX5Vec + B5*[1; testU5Vec]; % First order Jacobian solt'n
 
 %% Plots for test case 5
@@ -234,21 +234,22 @@ end
 close all;
 P = 10;
 t_start = 0;
-t_stop = 20;
-epsX = 0.1;   % Steps
-epsU = 0.1;
+t_stop = 50;
+epsX = 1;   % Steps
+epsU = 1;
 timestep = 0.1;
-
+doCellOps = 1;
 %select input evaluation function
 eval_u = 'GenInputVec';
 %select model evaluation function
 eval_f = 'EVALF';
 lin_f = 'EVALFLIN';
-theta = GenThetaMat(P,'symmetric');
+theta = GenThetaMat(P,'rand');
 
 %start state at time 0 equals input vector at time 0
-x_start = GenStateVec(P, 'random');
 u0 = GenInputVec(P, 0); % Linearization operating point, t=0
+% x_start = GenStateVec(P, 'random');
+x_start = u0;
 p1 = GenPStruct(P, theta);
 
 [p2.A, p2.B] = LINEARIZEF(eval_f,x_start,p1,u0,epsX,epsU,doCellOps); % A5, B5 from above
@@ -261,8 +262,8 @@ Ntotal = zeros(size(X,1),size(X,2));
 NtotalLin = zeros(size(XLin,1),size(XLin,2));
 
 % Plot SEIR curves for all nodes
-xlims = [0 20];
-ylims = [0 300];
+xlims = [0 30];
+ylims = [0 1000];
 for i = 1:size(X,1)
     S = X(i,:);
     s = [S{1:end}];
@@ -308,9 +309,10 @@ end
 deflines = lines(4);
 close all;
 figure; 
-imagesc(p2.A);
+imagesc(mag2db(p2.A));
 title('A');
-colorbar;
+c = colorbar;
+c.Label.String = 'dB';
 set(gcf,'position',[286   678   379   300]);
 
 figure;
@@ -320,20 +322,21 @@ xlabel('Node');
 set(gcf,'position',[286   678   379   300]);
 
 figure;
-imagesc(p2.B(:,2:end));
+imagesc(mag2db(p2.B(:,2:end)));
 title('B');
-colorbar;
+c = colorbar;
+c.Label.String = 'dB';
 set(gcf,'position',[286   678   379   300]);
 
 figure;
-startVec = cell2vec(x_start);
+startVec = cell2vec(x_start,1);
 plot(startVec(1:4:end),'color',deflines(1,:),'linewidth',1.5)
 title('Initial S for all Nodes');
 xlabel('Node #');
 ylabel('# Individuals')
 axis tight;
 set(gcf,'position',[286   678   379   300]);
-ylim([0 100]);
+% ylim([0 100]);
 
 figure;
 plot(startVec(2:4:end),'color',deflines(2,:),'linewidth',1.5)
@@ -342,7 +345,7 @@ xlabel('Node #');
 ylabel('# Individuals')
 axis tight;
 set(gcf,'position',[286   678   379   300]);
-ylim([0 100]);
+% ylim([0 100]);
 
 figure;
 plot(startVec(3:4:end),'color',deflines(3,:),'linewidth',1.5)
@@ -351,7 +354,7 @@ xlabel('Node #');
 ylabel('# Individuals')
 axis tight;
 set(gcf,'position',[286   678   379   300]);
-ylim([0 100]);
+% ylim([0 100]);
 
 figure;
 plot(startVec(4:4:end),'color',deflines(4,:),'linewidth',1.5)
@@ -360,4 +363,19 @@ xlabel('Node #');
 ylabel('# Individuals')
 axis tight;
 set(gcf,'position',[286   678   379   300]);
-ylim([0 100]);
+% ylim([0 100]);
+%%
+BCell = u0; % From above linearization
+BVec = cell2vec(BCell,1);
+B = [BCell{:}];
+x = [p2.A(1:3,1:3), p2.A(1:3,5:7); p2.A(5:7,1:3), p2.A(5:7,5:7)] \ [BVec(1:3); BVec(5:7)]
+[L,U,P] = lu(p2.A);
+UnoR = U(1:end-1,1:end-1);
+BVecNoR = [BVec(1:3); BVec(5:7)];
+
+x0Vec = cell2vec(x_start,1);
+x0vecNoR = [x0Vec(1:3); x0Vec(5:7)];
+b = [p2.A(:,1:3) p2.A(:,5:7)]*x0vecNoR
+
+
+p2.A \ (p2.A*[1 1 1 0 1 1 1 0]')
