@@ -6,7 +6,6 @@ x = cell(P,1);
 for i = 1:length(x)
     if method == "sameIC"
         x{i} = 100*ones(4,1);
-        
     elseif method == "random"
         x{i} = 100*rand(4,1);
     else

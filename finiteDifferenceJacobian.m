@@ -31,8 +31,7 @@ for node = 1:numNodes
             fDiffU = feval(f,x0,p,uStep) - feval(f,x0,p,u0);
             fDiffX = feval(f,xStep,p,u0) - feval(f,x0,p,u0);
             Jf_u((node-1)*numEquationsPerNode+eq,:) = (1/epsU)*fDiffU;
-            Jf_x((node-1)*numEquationsPerNode+eq,:) = (1/epsX)*fDiffX;
-            
+            Jf_x((node-1)*numEquationsPerNode+eq,:) = (1/epsX)*fDiffX; 
         end
     end
 end
