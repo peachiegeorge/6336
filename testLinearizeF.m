@@ -2,10 +2,10 @@ clear; close all;
 
 %% Test 1 Simple scalar linear system, no inputs.
 f1 = @(x,p,u) x.^3;
-doScalarInput = 1;
+doCellOps = 0;
 x0 = 6;
 u0 = 0;
-[A,B] = LINEARIZEF(f1,x0,[],u0,0.001,0.001,doScalarInput);
+[A,B] = LINEARIZEF(f1,x0,[],u0,0.001,0.001,doCellOps);
 testX1 = linspace(0,10,100);
 testF1 = f1(testX1);
 testF1Jacobian = A1*testX1 + B1*[1; u0];
@@ -22,10 +22,10 @@ set(gcf,'position',[286   678   379   300]);
 
 %% Test 2 Simple scalar linear system, no inputs.
 f2 = @(x,p,u) cos(x);
-doScalarInput = 1;
+doCellOps = 0;
 x0 = pi/2;
 u0 = 0;
-[A2,B2] = LINEARIZEF(f2,x0,[],u0,0.001,0.001,doScalarInput);
+[A2,B2] = LINEARIZEF(f2,x0,[],u0,0.001,0.001,doCellOps);
 testX2 = linspace(0,5,100);
 testF2 = f2(testX2);
 testF2Jacobian = A2*testX2 + B2*[1; u0];
@@ -42,9 +42,9 @@ set(gcf,'position',[286   678   379   300]);
 
 %% Test 3 Simple scalar linear system, no inputs.
 f3 = @(x,p,u) exp(x);
-doScalarInput = 1;
+doCellOps = 0;
 x0 = 0.5;
-[A3,B3] = LINEARIZEF(f3,x0,[],0,0.001,0.001,doScalarInput);
+[A3,B3] = LINEARIZEF(f3,x0,[],0,0.001,0.001,doCellOps);
 testX3 = linspace(0,1,100);
 testF3 = f3(testX3);
 testF3Jacobian = A3*testX3 + B3*[1; 0];
@@ -62,13 +62,14 @@ set(gcf,'position',[286   678   379   300]);
 %% Test 4 Simple heat conducting bar
 f4 = 'eval_f_LinearSystem';
 u4 = 'eval_u_step';
-N = 1000; % # of nodes
-doScalarInput = 1;
+N = 10; % # of nodes
+doCellOps = 0;
 [p,x0,t_start,t_stop,max_dt_FE] = getParam_HeatBarExample(N);
 u0 = zeros(N,1); % Only considering t = 0
 
+x0 = rand(N,1);
 % Linearize
-[A4,B4] = LINEARIZEF(f4,x0,p,u0,1,1,doScalarInput);
+[A4,B4] = LINEARIZEF(f4,x0,p,u0,1,1,doCellOps);
 
 % Simulate 100 different state vectors
 testX4 = rand(N,1000);

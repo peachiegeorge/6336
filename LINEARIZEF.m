@@ -1,4 +1,4 @@
-function [A,B] = LINEARIZEF(f,x0,p,u0,epsX,epsU,doScalarEval)
+function [A,B] = LINEARIZEF(f,x0,p,u0,epsX,epsU,doCellOps)
 % TO RUN: Provide 
 % A  : Jacobian w.r.t state variables, x, evaluated at operating pt. x0
 % B  : K0 (see def. in PM2 doc) and Jf_u, the Jacobian w.r.t inputs/sources u
@@ -11,13 +11,13 @@ function [A,B] = LINEARIZEF(f,x0,p,u0,epsX,epsU,doScalarEval)
 % doScalarEval : a flag to let the functions know if you are evaluating a
 %                scalar function
 
-[Jf_u, Jf_x] = finiteDifferenceJacobian(f,x0,p,u0,epsX,epsU,doScalarEval);
+[Jf_u, Jf_x] = finiteDifferenceJacobian(f,x0,p,u0,epsX,epsU,doCellOps);
 
 % K0 should be N x 1 where N is the number of equations in the system
-if doScalarEval
-    K0 = feval(f,x0,p,u0) - Jf_x*x0 - Jf_u*u0;
-else
+if doCellOps
     K0 = cell2mat(feval(f,x0,p,u0)) - Jf_x*cell2mat(x0) - Jf_u*cell2mat(u0);
+else
+    K0 = feval(f,x0,p,u0) - Jf_x*x0 - Jf_u*u0;
 end
 
 A = Jf_x;       % Jacobian, w.r.t x (state)
