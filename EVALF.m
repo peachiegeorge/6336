@@ -9,7 +9,6 @@ function f = EVALF(x,p,u)
 
 P = length(x); % number of nodes
 f = cell(P,1); % Initialize f
-% x = u; % Add inputs to x
 
 % Initialize Qs, Ms
 Qs = zeros(P,1);
@@ -23,6 +22,9 @@ Mi = zeros(P,1);
 % *Need to do this to calculate inter-node flows
 xMat = [x{1:end}];
 
+% Currently, we use a for loop to handle each node because calculation of
+% Qs has a nonlinear term (S*I). Therefore, we cannot do this as a
+% matrix-vector multiplcation.
 for i = 1:P % For each node
     % Calculate inter-node flows
     Ms(i) = CalcMs(p(i).theta, xMat(1,1:end)');
