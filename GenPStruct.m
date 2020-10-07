@@ -8,6 +8,7 @@ p(P, 1).beta = 0;  % Initialize struct array
 for i = 1:P
     p(i,1).beta = 0.009;
     p(i,1).sigma = 0.1;
-    p(i,1).gamma = 0.1;
+    p(i,1).gamma = 0.5;
+    p(i,1).nu = 0.1;
     p(i,1).theta = theta(i,:); % Extract row for that node
 end
