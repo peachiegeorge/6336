@@ -36,12 +36,22 @@ for i = 1:P % For each node
     Qe(i) = CalcQe(p(i).sigma, x{i}(2));
     Qi(i) = CalcQi(p(i).gamma, x{i}(3));
     
+    % Calculate deaths (leakage)
+    D(i) = CalcD(p(i).nu, x{i}(4));
+    
     % Calculate entries of f
     f{i}(1,1) = -Qs(i) + Ms(i);
     f{i}(2,1) = Qs(i) - Qe(i) + Me(i);
     f{i}(3,1) = Qe(i) - Qi(i) + Mi(i);
-    f{i}(4,1) = Qi(i);
+    f{i}(4,1) = Qi(i) - D(i);
 end
+end
+
+function D = CalcD(nu,R)
+if R < 0
+    D = 0;
+end
+D = nu*R;
 end
 
 function Qs = CalcQs(beta,S,I)
