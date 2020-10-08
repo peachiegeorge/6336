@@ -75,7 +75,7 @@ testF4Jacobian = A4*testX4 + B4*[1; testU4]; % First order Jacobian solt'n
 
 %% Plots for test 4
 close all;
-figure; 
+figure;
 imagesc(A4);
 title('A');
 colorbar;
@@ -164,7 +164,7 @@ t_stop = 20;
 epsX = 0.1;   % Steps
 epsU = 0.1;
 timestep = 0.1;
- doCellOps = 1;
+doCellOps = 1;
 %select input evaluation function
 eval_u = 'GenInputVec';
 %select model evaluation function
@@ -213,7 +213,7 @@ for i = 1:size(X,1)
     xlim(xlims);
     ylim(ylims);
     set(gcf,'position',[286   678   379   300]);
-
+    
     figure;
     hold on;
     plot(days, sLin(1,1:end), 'LineWidth', 1.5);
@@ -228,88 +228,91 @@ for i = 1:size(X,1)
     xlim(xlims);
     ylim(ylims);
     set(gcf,'position',[286   678   379   300]);
-
+    
 end
 %% Test Case 7: Forward Euler, 10 Nodes with Same Input Vec
 close all;
-P = 10;
-t_start = 0;
-t_stop = 50;
+P = 3;
+doPlots = 1;
+
+eval_f = 'EVALF';
+x_start = GenStateVec(P, 'random');
+theta = GenThetaMat(P,'zeroes');
+p1 = GenPStruct(P, theta);
+u0 = GenInputVec(P, 0); % Linearization operating point, t=0
 epsX = 1;   % Steps
 epsU = 1;
-timestep = 0.1;
 doCellOps = 1;
-%select input evaluation function
+
+% Linearize
+[p2.A, p2.B] = LINEARIZEF(eval_f,x_start,p1,u0,epsX,epsU,doCellOps);
+
+% Forward Euler
 eval_u = 'GenInputVec';
-%select model evaluation function
-eval_f = 'EVALF';
 lin_f = 'EVALFLIN';
-theta = GenThetaMat(P,'rand');
-
-%start state at time 0 equals input vector at time 0
-u0 = GenInputVec(P, 0); % Linearization operating point, t=0
-% x_start = GenStateVec(P, 'random');
-x_start = u0;
-p1 = GenPStruct(P, theta);
-
-[p2.A, p2.B] = LINEARIZEF(eval_f,x_start,p1,u0,epsX,epsU,doCellOps); % A5, B5 from above
-
-% test FE function
+t_start = 0;
+t_stop = 50;
+timestep = 0.01;
 [X] = ForwardEuler(P, eval_f, x_start, p1, eval_u, t_start, t_stop, timestep);
 [XLin] = ForwardEuler(P, lin_f, x_start, p2, eval_u, t_start, t_stop, timestep);
 
+% Plot SEIR curves for all nodes
 Ntotal = zeros(size(X,1),size(X,2));
 NtotalLin = zeros(size(XLin,1),size(XLin,2));
-
-% Plot SEIR curves for all nodes
-xlims = [0 30];
+xlims = [0 1];
 ylims = [0 1000];
-for i = 1:size(X,1)
-    S = X(i,:);
-    s = [S{1:end}];
-    Ntotal(i,:) = sum(s, 1);
-    
-    SLin = XLin(i,:);
-    sLin = [SLin{1:end}];
-    NtotalLin(i,:) = sum(sLin, 1);
-    
-    figure;
-    hold on;
-    days = linspace(t_start,t_stop,length(s(1,1:end)));
-    plot(days, s(1,1:end), 'LineWidth', 1.5);
-    plot(days, s(2,1:end), 'LineWidth', 1.5);
-    plot(days, s(3,1:end), 'LineWidth', 1.5);
-    plot(days, s(4,1:end), 'LineWidth', 1.5);
-    xlabel('t [days]');
-    ylabel('# Individuals');
-    hold off;
-    legend('S(t)','E(t)','I(t)','R(t)');
-    title(['Exact' ' Node ', num2str(i)])
-    xlim(xlims);
-    ylim(ylims);
-    set(gcf,'position',[286   678   379   300]);
-
-    figure;
-    hold on;
-    plot(days, sLin(1,1:end), 'LineWidth', 1.5);
-    plot(days, sLin(2,1:end), 'LineWidth', 1.5);
-    plot(days, sLin(3,1:end), 'LineWidth', 1.5);
-    plot(days, sLin(4,1:end), 'LineWidth', 1.5);
-    xlabel('t [days]');
-    ylabel('# Individuals');
-    hold off;
-    legend('S(t)','E(t)','I(t)','R(t)');
-    title(['Linearized ' 'Node ', num2str(i)])
-    xlim(xlims);
-    ylim(ylims);
-    set(gcf,'position',[286   678   379   300]);
+if doPlots == 1
+    for i = 1:size(X,1)
+        S = X(i,:);
+        s = [S{1:end}];
+        Ntotal(i,:) = sum(s, 1);
+        
+        SLin = XLin(i,:);
+        sLin = [SLin{1:end}];
+        NtotalLin(i,:) = sum(sLin, 1);
+        
+        subplot(size(X,1),2,(i-1)*2+1)
+        hold on;
+        days = linspace(t_start,t_stop,length(s(1,1:end)));
+        plot(days, s(1,1:end), 'LineWidth', 1.5);
+        plot(days, s(2,1:end), 'LineWidth', 1.5);
+        plot(days, s(3,1:end), 'LineWidth', 1.5);
+        plot(days, s(4,1:end), 'LineWidth', 1.5);
+        xlabel('t [days]');
+        ylabel('# Individuals');
+        hold off;
+        if i == 1
+            legend('S(t)','E(t)','I(t)','R(t)');
+        end
+        title(['Exact' ' Node ', num2str(i)])
+        xlim(xlims);
+%         ylim(ylims);
+        set(gcf,'position',[286   231   649   747]);
+        
+        subplot(size(X,1),2,(i-1)*2+2)
+        hold on;
+        plot(days, sLin(1,1:end), 'LineWidth', 1.5);
+        plot(days, sLin(2,1:end), 'LineWidth', 1.5);
+        plot(days, sLin(3,1:end), 'LineWidth', 1.5);
+        plot(days, sLin(4,1:end), 'LineWidth', 1.5);
+        xlabel('t [days]');
+        ylabel('# Individuals');
+        hold off;
+        if i == 1
+            legend('S(t)','E(t)','I(t)','R(t)');
+        end
+        title(['Linearized ' 'Node ', num2str(i)])
+        xlim(xlims);
+%         ylim(ylims);
+        set(gcf,'position',[286   231   649   747]);
+    end
 end
-
+cond(p2.A)
 %% Plots for test case 7
 deflines = lines(4);
 close all;
-figure; 
-imagesc(mag2db(p2.A));
+figure;
+imagesc((p2.A));
 title('A');
 c = colorbar;
 c.Label.String = 'dB';
@@ -365,17 +368,5 @@ axis tight;
 set(gcf,'position',[286   678   379   300]);
 % ylim([0 100]);
 %%
-BCell = u0; % From above linearization
-BVec = cell2vec(BCell,1);
-B = [BCell{:}];
-x = [p2.A(1:3,1:3), p2.A(1:3,5:7); p2.A(5:7,1:3), p2.A(5:7,5:7)] \ [BVec(1:3); BVec(5:7)]
-[L,U,P] = lu(p2.A);
-UnoR = U(1:end-1,1:end-1);
-BVecNoR = [BVec(1:3); BVec(5:7)];
-
-x0Vec = cell2vec(x_start,1);
-x0vecNoR = [x0Vec(1:3); x0Vec(5:7)];
-b = [p2.A(:,1:3) p2.A(:,5:7)]*x0vecNoR
-
-
-p2.A \ (p2.A*[1 1 1 0 1 1 1 0]')
+BVec = cell2vec(u0,1);
+xSolve = p2.A \ (-p2.B*[1;BVec])
