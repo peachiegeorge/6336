@@ -1,4 +1,4 @@
-function[Jf] = analyticJacobian(P, x, p, u, f, theta)
+function[Jf] = analyticJacobian(P, x, p, theta)
 
 numNodes = size(x,1);
 numVariables= size(x,1)*4;
@@ -57,8 +57,11 @@ for node = 1:numNodes
                     Jf(row,nextICol) = theta(node,nextNode);
                 end
             end
-        else
-            % Currently, R does not affect other equations
+        elseif(var == 4)
+            % R Variable
+            % Calculate derivative contributions to home node
+            homeCoeff = (p(node).nu);
+            Jf(row,row) = - homeCoeff;           
         end
     end
     
