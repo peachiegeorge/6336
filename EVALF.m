@@ -40,10 +40,10 @@ for i = 1:P % For each node
     D(i) = CalcD(p(i).nu, x{i}(4));
     
     % Calculate entries of f
-    f{i}(1,1) = -Qs(i) + Ms(i);
-    f{i}(2,1) = Qs(i) - Qe(i) + Me(i);
-    f{i}(3,1) = Qe(i) - Qi(i) + Mi(i);
-    f{i}(4,1) = Qi(i) - D(i);
+    f{i}(1,1) = -Qs(i) + Ms(i) + u{i}(1);
+    f{i}(2,1) = Qs(i) - Qe(i) + Me(i) + u{i}(2);
+    f{i}(3,1) = Qe(i) - Qi(i) + Mi(i) + u{i}(3);
+    f{i}(4,1) = Qi(i) - D(i) + u{i}(4);
 end
 end
 
