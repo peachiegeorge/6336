@@ -4,7 +4,7 @@ function f = EVALF(x,p,u)
 % p : P x 1 struct of params
 % u : P x 1 cell array of inputs {[U1; U1; U1; U1];...
 %                                 [UP; UP; UP; UP]}
-% f : P x 1 cell array of outputs {[dS1/dt; dE1/dt; dI1/dt; dR1/dt];...
+% f : 4P x 1 vector of outputs {[dS1/dt; dE1/dt; dI1/dt; dR1/dt];...
 %                                 [dSP/dt; dEP/dt; dIP/dt; dRP/dt]}
 
 P = length(x); % number of nodes
@@ -45,6 +45,7 @@ for i = 1:P % For each node
     f{i}(3,1) = Qe(i) - Qi(i) + Mi(i) + u{i}(3);
     f{i}(4,1) = Qi(i) - D(i) + u{i}(4);
 end
+f = cell2vec(f,1);
 end
 
 function D = CalcD(nu,R)
