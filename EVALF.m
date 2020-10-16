@@ -1,10 +1,10 @@
 function f = EVALF(x,p,u)
-% x : P x 1 cell array of inputs {[S1; E1; I1; R1];...
+% x : P x 1 vector of inputs {[S1; E1; I1; R1];...
 %                                 [SP; EP; IP; RP]}
 % p : P x 1 struct of params
 % u : P x 1 cell array of inputs {[U1; U1; U1; U1];...
 %                                 [UP; UP; UP; UP]}
-% f : 4P x 1 vector of outputs {[dS1/dt; dE1/dt; dI1/dt; dR1/dt];...
+% f : P x 1 vector of outputs {[dS1/dt; dE1/dt; dI1/dt; dR1/dt];...
 %                                 [dSP/dt; dEP/dt; dIP/dt; dRP/dt]}
 
 P = length(x); % number of nodes
@@ -45,9 +45,9 @@ for i = 1:P % For each node
     f{i}(3,1) = Qe(i) - Qi(i) + Mi(i) + u{i}(3);
     f{i}(4,1) = Qi(i) - D(i) + u{i}(4);
 end
-f = cell2vec(f,1);
 end
 
+% Variables defined in project report
 function D = CalcD(nu,R)
 if R < 0
     D = 0;
@@ -63,6 +63,7 @@ Qs = beta*S*I;
 end
 
 function Ms = CalcMs(theta,S)
+% Net flow to current community's S population
 if S < 0
     Ms = 0;
 end
