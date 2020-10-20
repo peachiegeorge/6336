@@ -107,7 +107,7 @@ end
 Dr = nu*R;
 end
 
-function Qs = CalcQs(beta,S,I,N)
+function Qs = CalcQs(beta,S,I)
 % Si -> Ei
 if S < 0 || I < 0
     Qs = 0;

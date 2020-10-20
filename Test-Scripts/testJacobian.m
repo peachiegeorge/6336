@@ -3,15 +3,13 @@ P = 10;    % # nodes simulated
 %select model evaluation function
 eval_f = 'EVALF';
 
-theta = GenThetaMat(P,'symmetric');
+theta = GenThetaMat(P,'random');
 
-%start state at time 0 equals input vector at time 0
 x_start = GenStateVec(P, 'sameIC');
 p = GenPStruct(P, theta);
+u = GenInputVec(P, 3); % Linearization operating point, t=0
 
-u = GenInputVec(P, 0); % Linearization operating point, t=0
-
-[Jf_u, Jf_x] = finiteDifferenceJacobian('EVALF',x_start,p,u);
+[Jf_u, Jf_x] = finiteDifferenceJacobian('EVALF',x_start,p,u,0.1,0.1,1);
 
 figure(1);
 imagesc(Jf_u);

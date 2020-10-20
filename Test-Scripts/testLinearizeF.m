@@ -229,15 +229,15 @@ end
 %% Test Case 7: Forward Euler, 10 Nodes with Same Input Vec
 close all;
 P = 2;
-doPlots = 0;
-
+doPlots = 1;
+rng(1);
 eval_f = 'EVALF';
 x_start = GenStateVec(P,'sameIC');
 theta = GenThetaMat(P,'random');
 p1 = GenPStruct(P, theta);
 u0 = GenInputVec(P, 0); % Linearization operating point, t=0
-epsX = 1;   % Steps
-epsU = 1;
+epsX = 0.1;   % Steps
+epsU = 0.1;
 doCellOps = 1;
 
 % Linearize
@@ -255,7 +255,7 @@ timestep = 0.01;
 % Plot SEIR curves for all nodes
 Ntotal = zeros(size(X,1),size(X,2));
 NtotalLin = zeros(size(XLin,1),size(XLin,2));
-xlims = [0 1];
+xlims = [0 3];
 ylims = [0 1000];
 if doPlots == 1
     for i = 1:size(X,1)
@@ -304,6 +304,7 @@ if doPlots == 1
     end
 end
 condest(p2.A)
+
 %% Plots for test case 7
 deflines = lines(4);
 close all;
@@ -364,12 +365,16 @@ axis tight;
 set(gcf,'position',[286   678   379   300]);
 % ylim([0 100]);
 %% Testing LU solver with preconditioner matrix
-sf = 100000;
+sf = 100000000;
 diagel = sf*diag(p2.A);
 conditioned = p2.A;
-conditioned(1:size(p2.A)+1:end) = diagel;
+conditioned(1:size(p2.A)+1:end) = diagel; % Scale diagonal elements
 condest(conditioned)
 BVec = cell2vec(u0,1);
 % BVec = zeros(4*P,1);
-xSolve = conditioned \ (-p2.B*[1;BVec])
+xSolve = conditioned \ (-p2.B*[1;BVec]);
 xSolve*sf
+
+%% Try iterative solver
+xSolve2 = sf*tgcr(conditioned, -p2.B*[1;BVec], 1e-3, 1e3)
+xSolve3 = sf*gmres(conditioned, -p2.B*[1;BVec])

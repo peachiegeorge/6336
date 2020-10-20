@@ -23,7 +23,7 @@ elseif method == "random"
 %             end
 %         end
 %     end
-    theta = randfixedsum(P,P,1,0,1);
+    theta = randfixedsum(P,P,1,0,1)/NORM_FACT;
 elseif method == "zeroes"
     theta = zeros(P,P);
 end
