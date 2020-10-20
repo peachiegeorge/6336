@@ -158,22 +158,18 @@ set(gcf,'position',[286   678   379   300]);
 
 %% Test Case 6: Forward Euler, 2 Nodes with Same Input Vec
 close all;
-P = 2;
+P = 12;
 t_start = 0;
 t_stop = 20;
 epsX = 0.1;   % Steps
 epsU = 0.1;
-timestep = 0.1;
+timestep = 0.01;
 doCellOps = 1;
-%select input evaluation function
 eval_u = 'GenInputVec';
-%select model evaluation function
 eval_f = 'EVALF';
 lin_f = 'EVALFLIN';
-theta = GenThetaMat(P,'symmetric');
-
-%start state at time 0 equals input vector at time 0
-x_start = GenStateVec(P, 'sameIC');
+theta = GenThetaMat(P,'random');
+x_start = GenStateVec(P, 'random');
 u0 = GenInputVec(P, 0); % Linearization operating point, t=0
 p1 = GenPStruct(P, theta);
 
@@ -187,8 +183,8 @@ Ntotal = zeros(size(X,1),size(X,2));
 NtotalLin = zeros(size(XLin,1),size(XLin,2));
 
 % Plot SEIR curves for all nodes
-xlims = [0 1];
-ylims = [0 300];
+xlims = [0 20];
+ylims = [0 10000];
 for i = 1:size(X,1)
     S = X(i,:);
     s = [S{1:end}];
@@ -232,12 +228,12 @@ for i = 1:size(X,1)
 end
 %% Test Case 7: Forward Euler, 10 Nodes with Same Input Vec
 close all;
-P = 3;
-doPlots = 1;
+P = 2;
+doPlots = 0;
 
 eval_f = 'EVALF';
-x_start = GenStateVec(P, 'random');
-theta = GenThetaMat(P,'zeroes');
+x_start = GenStateVec(P,'sameIC');
+theta = GenThetaMat(P,'random');
 p1 = GenPStruct(P, theta);
 u0 = GenInputVec(P, 0); % Linearization operating point, t=0
 epsX = 1;   % Steps
@@ -307,7 +303,7 @@ if doPlots == 1
         set(gcf,'position',[286   231   649   747]);
     end
 end
-cond(p2.A)
+condest(p2.A)
 %% Plots for test case 7
 deflines = lines(4);
 close all;
@@ -367,6 +363,13 @@ ylabel('# Individuals')
 axis tight;
 set(gcf,'position',[286   678   379   300]);
 % ylim([0 100]);
-%%
+%% Testing LU solver with preconditioner matrix
+sf = 100000;
+diagel = sf*diag(p2.A);
+conditioned = p2.A;
+conditioned(1:size(p2.A)+1:end) = diagel;
+condest(conditioned)
 BVec = cell2vec(u0,1);
-xSolve = p2.A \ (-p2.B*[1;BVec])
+% BVec = zeros(4*P,1);
+xSolve = conditioned \ (-p2.B*[1;BVec])
+xSolve*sf
