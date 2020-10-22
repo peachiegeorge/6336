@@ -60,9 +60,9 @@ for i = 1:P % For each community
     
     % Calculate entries of f
     f{i}(1,1) = B(i)  - Qs(i) - Ds(i) + Ms(i) - Os(i) + u{i}(1);
-    f{i}(2,1) = Qs(i) - Qe(i) - De(i) + Me(i) - Oe(i) + u{i}(2);
+    f{i}(2,1) = Qs(i) - Qe(i) - De(i) + Me(i) - Oe(i);
     f{i}(3,1) = Qe(i) - Qi(i) - Di(i) + Mi(i) - Oi(i) + u{i}(3);
-    f{i}(4,1) = Qi(i)         - Dr(i)                 + u{i}(4);
+    f{i}(4,1) = Qi(i)         - Dr(i);
 end
 end
 

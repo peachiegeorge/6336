@@ -236,8 +236,8 @@ x_start = GenStateVec(P,'sameIC');
 theta = GenThetaMat(P,'random');
 p1 = GenPStruct(P, theta);
 u0 = GenInputVec(P, 0); % Linearization operating point, t=0
-epsX = 0.1;   % Steps
-epsU = 0.1;
+epsX = 0.01;   % Steps
+epsU = 0.01;
 doCellOps = 1;
 
 % Linearize
@@ -246,9 +246,9 @@ doCellOps = 1;
 % Forward Euler
 eval_u = 'GenInputVec';
 lin_f = 'EVALFLIN';
-t_start = 0;
-t_stop = 50;
 timestep = 0.01;
+t_start = 0;
+t_stop = 30;
 [X] = ForwardEuler(P, eval_f, x_start, p1, eval_u, t_start, t_stop, timestep);
 [XLin] = ForwardEuler(P, lin_f, x_start, p2, eval_u, t_start, t_stop, timestep);
 
