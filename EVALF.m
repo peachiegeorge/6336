@@ -30,6 +30,9 @@ B = zeros(P,1);     % Births
 % *Need to do this to calculate inter-community flows
 xMat = [x{1:end}];
 
+% In case x is already a matrix, no conversion is needed
+% xMat = x;
+
 % Currently, we use a for loop to handle each community because calculation of
 % Qs has a nonlinear term (S*I). Therefore, we cannot do this as a
 % matrix-vector multiplcation.

@@ -4,6 +4,14 @@ numNodes = size(x,1);
 numVariables= size(x,1)*4;
 Jf = zeros(numVariables);
 
+% Calculate inter-community flows leaving  
+sumInterFlowLeaving = zeros(numNodes, 1);
+for node = 1:numNodes
+    for neighbor = 1:numNodes
+        sumInterFlowLeaving(node) = sumInterFlowLeaving(node) + theta(neighbor, node)
+    end
+end
+
 for node = 1:numNodes
     for var = 1:4
         row = (node - 1)*4 + var;
@@ -11,8 +19,11 @@ for node = 1:numNodes
             % S variable
             % Calculate derivative contributions to home node
             homeCoeff = (p(node).beta * x{node}(3));
-            Jf(row,row) = - homeCoeff;
-            Jf(row,row+1) = homeCoeff;
+%             Jf(row,row) = - homeCoeff;
+%             Jf(row,row+1) = homeCoeff;
+
+            Jf(row,row) = p(node).mu - p(node).nu - homeCoeff - sumInterFlowLeaving(node);
+            Jf(row,row+1) = homeCoeff;            
             
             % Calculate controbution to other nodes
             for nextNode = 1:numNodes-1
@@ -26,9 +37,12 @@ for node = 1:numNodes
             % E variable
             % Calculate derivative contributions to home node
             homeCoeff = (p(node).sigma);
-            Jf(row,row) = - homeCoeff;
-            Jf(row,row+1) = homeCoeff;
+%             Jf(row,row) = - homeCoeff;
+%             Jf(row,row+1) = homeCoeff;
             
+            Jf(row,row) = - homeCoeff - p(node).nu - sumInterFlowLeaving(node);
+            Jf(row,row+1) = homeCoeff;              
+
             % Calculate controbution to other nodes
             for nextNode = 1:numNodes-1
                 if(nextNode ~= node)
@@ -42,7 +56,8 @@ for node = 1:numNodes
             % Involved both in susceptiblity and home coeff
             % Calculate derivative contributions to home node
             homeCoeff = (p(node).gamma);
-            Jf(row,row) = - homeCoeff;
+%             Jf(row,row) = - homeCoeff;
+            Jf(row,row) = - homeCoeff - p(node).nu - sumInterFlowLeaving(node);
             Jf(row,row+1) = homeCoeff;
             
             % susceptible contribution

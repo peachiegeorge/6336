@@ -6,8 +6,8 @@ function [L, U, Pe, X, Y] = testSolveSteadyState()
 
     P = 4;
 
-    %theta = GenThetaMat(P, 'symmetric');
-    theta = zeros(P, P)
+    theta = GenThetaMat(P, 'symmetric');
+%     theta = zeros(P, P)
     
     x = GenSteadyStateVec(P, 1)
     %p = GenPStruct(P, theta);
@@ -16,15 +16,25 @@ function [L, U, Pe, X, Y] = testSolveSteadyState()
     % value in u is not used but EVALF require u as a parameter
     u = GenInputVec(P, 1);
     
+    epsX = 0.1;
+    epsU = 0.1;
+    doCellOps = 1;
+    
+    [Jf_u, Jf_x] = finiteDifferenceJacobian('EVALF', x, p, u, epsX, epsU, doCellOps);
+    
+    %Get Jacobian matrix A from analytic Jacobian 
     A = transpose(analyticJacobian(P, x, p, theta));
     
+    %Get Jacobian matrix A from finite difference Jacobian
+%     A = Jf_x;
+    
     %Generate preconditioner of A
-    T1 = genDiagPreconditioner(A);
+%     T1 = genDiagPreconditioner(A);
 %     T2 = genRowPreconditioner(A);
     
     %Scale A by Preditioner
-    old_A1 = A;
-    A = T1*A;
+%     old_A1 = A;
+%     A = T1*A;
     
 %     old_A2 = A;
 %     A = T2*A;
@@ -39,87 +49,13 @@ function [L, U, Pe, X, Y] = testSolveSteadyState()
     end
     
     %Scale B by Preditioner
-    old_B1 = B;
-    B = T1*B;
+%     old_B1 = B;
+%     B = T1*B;
     
 %     old_B2 = B;
 %     B = T2*B;    
     
     [L, U, Pe, X, Y] = solveSteadyState(A, B);    
     
-end
-
-function T = genDiagPreconditioner(A)
-    
-    [num_row, num_col] = size(A);
-
-    T = zeros(num_row, num_col)
-    for i=1:num_col
-%         T(i,i) = 1/A(i,i)
-        T(i,i) = 1000
-    end
-    
-end
-
-function T = genRowPreconditioner(A)
-    
-    [num_row, num_col] = size(A);
-
-    T = zeros(num_row, num_col)
-    for i=1:num_col
-        T(i,i) = 1;
-    end
-    
-    for i=[3, 7, 10, 11, 15, 16]
-        T(i, i) = 10;
-    end
-    
-end
-
-function x = GenSteadyStateVec(P, seed)
-    x = cell(P,1);
-    
-    rng(seed);
-    rand_e = randi([0 20], 1, 4) * 10;
-    rand_r = randi([0 20], 1, 4) * 10;
-    
-    x{1} = [6100; rand_e(1); 190; rand_r(1)];
-    x{2} = [2500; rand_e(2); 350; rand_r(2)];
-    x{3} = [7200; rand_e(3); 620; rand_r(3)];
-    x{4} = [3400; rand_e(4); 860; rand_r(4)];
-end
-
-function p = GenSteadyPStruct(P, theta)
-% Function to generate struct of parameters
-% Set parameters for each node
-% P: total number of nodes
-% theta: matrix of thetas
-% p: P x 1 cell array
-p(P, 1).beta = 0;  % Initialize struct array
-
-p(1,1).beta = 0.04;
-p(1,1).sigma = 0.2;
-p(1,1).gamma = 0.5;
-p(1,1).nu = 0.1;
-p(1,1).theta = theta(1,:); % Extract row for that node
-
-p(2,1).beta = 0.05;
-p(2,1).sigma = 0.3;
-p(2,1).gamma = 0.4;
-p(2,1).nu = 0.2;
-p(2,1).theta = theta(2,:); % Extract row for that node
-
-p(3,1).beta = 0.01;
-p(3,1).sigma = 0.1;
-p(3,1).gamma = 0.3;
-p(3,1).nu = 0.3;
-p(3,1).theta = theta(3,:); % Extract row for that node
-
-p(4,1).beta = 0.01;
-p(4,1).sigma = 0.3;
-p(4,1).gamma = 0.2;
-p(4,1).nu = 0.4;
-p(4,1).theta = theta(4,:); % Extract row for that node
-
 end
 
