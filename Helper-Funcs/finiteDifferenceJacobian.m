@@ -1,4 +1,7 @@
 function[Jf_u, Jf_x] = finiteDifferenceJacobian(f,x0,p,u0,epsX,epsU,doCellOps)
+% Set doCellOps true if you are working with cells; i.e., when modeling SEIR
+% transmission. Otherwise, set to false; i.e., when working with scalar
+% functions.
 
 numNodes = size(x0,1);   % # nodes
 if doCellOps
@@ -23,9 +26,8 @@ for node = 1:numNodes
             xStep{node}(eq) = x0{node}(eq) + epsX;
             fDiffU = cellfun(@minus, feval(f,x0,p,uStep), feval(f,x0,p,u0), 'Un',0);
             fDiffX = cellfun(@minus, feval(f,xStep,p,u0), feval(f,x0,p,u0), 'Un',0);
-%             Jf_u((node-1)*numEquationsPerNode+eq,:) = (1/epsU) * cell2mat(fDiffU);
-%             Jf_x((node-1)*numEquationsPerNode+eq,:) = (1/epsX) * cell2mat(fDiffX);
-            
+            %  Jf_u((node-1)*numEquationsPerNode+eq,:) = (1/epsU) * cell2mat(fDiffU);
+            %  Jf_x((node-1)*numEquationsPerNode+eq,:) = (1/epsX) * cell2mat(fDiffX);
             Jf_u(:,(node-1)*numEquationsPerNode + eq) = (1/epsU) * cell2mat(fDiffU);
             Jf_x(:,(node-1)*numEquationsPerNode + eq) = (1/epsX) * cell2mat(fDiffX);
         else
