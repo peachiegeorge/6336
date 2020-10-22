@@ -1,4 +1,4 @@
-function [L, U, Pe, X, Y] = testSolveSteadyState()
+function [x, r_norms] = testIterativeSolveSteadyState()
 
     % Generate Random Numbers That Are Repeatable
     rng('default');
@@ -17,37 +17,37 @@ function [L, U, Pe, X, Y] = testSolveSteadyState()
     u = GenInputVec(P, 1);
     
     A = transpose(analyticJacobian(P, x, p, theta));
-    
+
     %Generate preconditioner of A
-    T1 = genDiagPreconditioner(A);
-%     T2 = genRowPreconditioner(A);
-    
+    T1 = genDiagPreconditioner(A);    
+
     %Scale A by Preditioner
     old_A1 = A;
-    A = T1*A;
+    A = T1*A;    
     
-%     old_A2 = A;
-%     A = T2*A;
-    
-    num_excitations = 10;
-    B = zeros(4*P, num_excitations);
+    num_excitations = 10
+    B = zeros(4*P, num_excitations)
     
     for i = 1:num_excitations
-        x = GenSteadyStateVec(P, i);     
+        x = GenSteadyStateVec(P, i)     
         f = EVALF(x, p, u);
-        B(:, i) = reshape(-cell2mat(f), [4*P, 1]);
+        B(:, i) = reshape(-cell2mat(f), [4*P, 1])
     end
     
     %Scale B by Preditioner
     old_B1 = B;
-    B = T1*B;
+    B = T1*B;    
     
-%     old_B2 = B;
-%     B = T2*B;    
+    % LU Solver
+    %[L, U, Pe, X, Y] = solveSteadyState(A, B);
     
-    [L, U, Pe, X, Y] = solveSteadyState(A, B);    
+    % One right-hand side
+%     [x, r_norms] = iterativeSolveSteadyState(A, B)
     
+    % Multiple right-hand side
+    [x, r_norms] = iterativeSolveSteadyState(A, B)
 end
+
 
 function T = genDiagPreconditioner(A)
     
@@ -55,23 +55,8 @@ function T = genDiagPreconditioner(A)
 
     T = zeros(num_row, num_col)
     for i=1:num_col
-%         T(i,i) = 1/A(i,i)
-        T(i,i) = 1000
-    end
-    
-end
-
-function T = genRowPreconditioner(A)
-    
-    [num_row, num_col] = size(A);
-
-    T = zeros(num_row, num_col)
-    for i=1:num_col
-        T(i,i) = 1;
-    end
-    
-    for i=[3, 7, 10, 11, 15, 16]
-        T(i, i) = 10;
+        T(i,i) = 1/A(i,i)
+%         T(i,i) = 10000
     end
     
 end
