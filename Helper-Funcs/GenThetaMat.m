@@ -24,6 +24,7 @@ elseif method == "random"
 %         end
 %     end
     theta = randfixedsum(P,P,1,0,1)/NORM_FACT;
+    theta(1:size(theta,2)+1:end) = 0;
 elseif method == "zeros"
     theta = zeros(P,P);
 end
