@@ -16,30 +16,37 @@ X(:,1) = x_start;
 t(1) = t_start;
 plotNum = 0;
 for n=1:ceil((t_stop - t_start) / timestep)
-    if mod(n,10) == 0
-        plotNum = plotNum + 1;
-        [gr markerSizes] = VisualizeNetwork(X(:,n),p);
-        % Generate plot handles
-        %         figure(1);
-        %         pTot = plot(gr,'MarkerSize',markerSizes(1,:),'NodeColor','k','EdgeColor','k');
-        %         title(sprintf('Iteration %d',n));
-        figure(2); hold on;
-        pSus = plot(gr,'MarkerSize',2*markerSizes(2,:),'NodeColor','g','EdgeColor','k');
-        title(sprintf('Iteration %d',n));
-        %         figure(3); hold on;
-        %         pExp = plot(gr,'MarkerSize',markerSizes(3,:),'NodeColor','y','EdgeColor','k');
-        %         figure(4); hold on;
-        %         pInf = plot(gr,'MarkerSize',markerSizes(4,:),'NodeColor','r','EdgeColor','k');
-        %         figure(5); hold on;
-        %         pRem = plot(gr,'MarkerSize',markerSizes(5,:),'NodeColor','b','EdgeColor','k');
-    end
-    dt = min(timestep, (t_stop - t(n)));
-    t(n+1)= t(n) + dt;
-    u = feval(eval_u, P, t(n));
-    f = feval(eval_f, X(:,n), p, u);
-    dt_time_f = cellfun(@(a) a*dt, f, 'UniformOutput', false);
-    X(:,n+1)= cellfun(@(b, c) b + c, X(:,n), dt_time_f, 'UniformOutput', false);
-    
-    % XClamp = max([XTemp{:,n}], 0); % Clamp to 0
-    % X(:,n+1) = num2cell(XClamp,1)';
+	if mod(n,50) == 0
+		plotNum = plotNum + 1;
+		[gr markerSizes] = VisualizeNetwork(X(:,n),p);
+		% Generate plot handles
+% 		figure(1);
+% 		pTot = plot(gr,'MarkerSize',markerSizes(1,:),'NodeColor','k','EdgeColor','k');
+% 		title(sprintf('Iteration %d',n));
+% 		
+		figure(2);
+		pSus = plot(gr,'MarkerSize',markerSizes(2,:),'NodeColor','g','EdgeColor','k');
+		title(sprintf('Susceptible t = %d days',n*timestep));
+% 		
+% 		figure(3);
+% 		pExp = plot(gr,'MarkerSize',markerSizes(3,:),'NodeColor','y','EdgeColor','k');
+% 		title(sprintf('Exposed: t = %d days',n*timestep));
+		
+% 		figure(4);
+% 		pInf = plot(gr,'MarkerSize',markerSizes(4,:),'NodeColor','r','EdgeColor','k');
+% 		title(sprintf('Infected: t = %d days',n*timestep));
+		
+% 		figure(5);
+% 		pRem = plot(gr,'MarkerSize',markerSizes(5,:),'NodeColor','b','EdgeColor','k');
+% 		title(sprintf('Removed: t = %d days',n*timestep));
+	end
+	dt = min(timestep, (t_stop - t(n)));
+	t(n+1)= t(n) + dt;
+	u = feval(eval_u, P, t(n));
+	f = feval(eval_f, X(:,n), p, u);
+	dt_time_f = cellfun(@(a) a*dt, f, 'UniformOutput', false);
+	X(:,n+1)= cellfun(@(b, c) b + c, X(:,n), dt_time_f, 'UniformOutput', false);
+	
+	% XClamp = max([XTemp{:,n}], 0); % Clamp to 0
+	% X(:,n+1) = num2cell(XClamp,1)';
 end
