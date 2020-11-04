@@ -1,4 +1,4 @@
-function [x, r_norms] = testIterativeSolveSteadyState()
+function [x, r_norms] = testNewtonSolveSteadyState()
 
     % Generate Random Numbers That Are Repeatable
     rng('default');

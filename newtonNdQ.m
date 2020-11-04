@@ -59,7 +59,7 @@ for iter=1:maxIters
     if nf(iter) < tol,          % check for convergence
         % check for convergence
         fprintf('Converged in %d iterations\n',iter);
-        disp(x0)
+%         disp(x0)
         fprintf('Reach ||f(x)|| tolerance\n');
         break; 
     end
@@ -67,7 +67,7 @@ for iter=1:maxIters
     if ndx(iter) < delta_tol
         % check for convergence
         fprintf('Converged in %d iterations\n',iter);
-        disp(x0)       
+%         disp(x0)       
         fprintf('Reach delta ||f(x)|| tolerance\n');
         break;         
     end
@@ -75,7 +75,7 @@ for iter=1:maxIters
     if (iter > 1) && (delta_percent < delta_percent_tol)
         % check for convergence
         fprintf('Converged in %d iterations\n',iter);
-        disp(x0)       
+%         disp(x0)       
         fprintf('Reach (delta ||f(x)||) / ||x|| tolerance\n');
         break;         
     end
