@@ -23,11 +23,11 @@ for node = 1:numNodes
 %             Jf(row,row+1) = homeCoeff;
 
             Jf(row,row) = q * (p(node).mu - p(node).nu - (p(node).beta * x{node}(3)) - sumInterFlowLeaving(node)) + (1 - q);
-            Jf(row,row+1) = q * (p(node).beta * x{node}(3));            
+            Jf(row+1,row) = q * (p(node).beta * x{node}(3));            
             
             % Calculate controbution to other nodes
-            for nextNode = 1:numNodes-1
-                if(nextNode ~= node)
+            for nextNode = 1:numNodes
+                if(nextNode ~= node) && (mod(row, 4) ~= 0) 
                     nextSCol = (nextNode - 1)*4 + 1;
                     Jf(row,nextSCol) = q * theta(node,nextNode);
                 end
@@ -41,11 +41,11 @@ for node = 1:numNodes
 %             Jf(row,row+1) = homeCoeff;
             
             Jf(row,row) = q * (- p(node).sigma - p(node).nu - sumInterFlowLeaving(node)) + (1 - q);
-            Jf(row,row+1) = q * p(node).sigma;              
+            Jf(row+1,row) = q * p(node).sigma;              
 
             % Calculate controbution to other nodes
-            for nextNode = 1:numNodes-1
-                if(nextNode ~= node)
+            for nextNode = 1:numNodes
+                if(nextNode ~= node) && (mod(row, 4) ~= 0) 
                     nextECol = (nextNode - 1)*4 + 2;
                     Jf(row,nextECol) = q * theta(node,nextNode);
                 end
@@ -60,16 +60,16 @@ for node = 1:numNodes
 %             Jf(row,row+1) = homeCoeff;
 
             Jf(row,row) = q * (- p(node).gamma - p(node).nu - sumInterFlowLeaving(node)) + (1 - q);
-            Jf(row,row+1) = q * p(node).gamma;
+            Jf(row+1,row) = q * p(node).gamma;
             
             % susceptible contribution
             sCoeff = p(node).beta * x{node}(1);
-            Jf(row,row-2) = q * (- sCoeff);
-            Jf(row,row-1) = q * sCoeff;
+            Jf(row-2,row) = q * (- sCoeff);
+            Jf(row-1,row) = q * sCoeff;
             
             % Calculate controbution to other nodes
-            for nextNode = 1:numNodes-1
-                if(nextNode ~= node)
+            for nextNode = 1:numNodes
+                if(nextNode ~= node) && (mod(row, 4) ~= 0) 
                     nextICol = (nextNode - 1)*4 + 3;
                     Jf(row,nextICol) = q * theta(node,nextNode);
                 end
@@ -77,11 +77,16 @@ for node = 1:numNodes
         elseif(var == 4)
             % R Variable
             % Calculate derivative contributions to home node
-            Jf(row,row) = q * (- p(node).nu) + (1 - q);           
+            Jf(row,row) = q * (- p(node).nu) + (1 - q);  
+            
+            for nextNode = 1:numNodes
+                if(nextNode ~= node) && (mod(row, 4) ~= 0) 
+                    nextICol = (nextNode - 1)*4 + 3;
+                    Jf(row,nextICol) = q * theta(node,nextNode);
+                end
+            end            
         end
     end  
 end
-
-Jf = transpose(Jf);
 
 end

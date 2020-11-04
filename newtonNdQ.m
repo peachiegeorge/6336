@@ -13,11 +13,11 @@ function x0 = newtonNdQ(x0, p, u, theta, q)
 % number of Newton steps that are plotted sequentially
 % pauses between sub-steps
 
-tol=1;          % convergence tolerance
-delta_tol=1;     % convergence tolerance
-delta_percent_tol = 0.01; % convergence tolerance
+tol=10;          % convergence tolerance
+delta_tol=10;     % convergence tolerance
+delta_percent_tol = 0.1; % convergence tolerance
 
-maxIters=100;       % max # of iterations
+maxIters=500;       % max # of iterations
 x00=x0;             % initial guess
 
 f = EVALFQ(x0, p, u, q); 
@@ -54,7 +54,12 @@ for iter=1:maxIters
         delta_percent = ndx(iter)/nx(iter-1); 
     end
     
-    x(:, iter)=convertSeirMatToCell(convertSeirCellToMat(x0) + dx);              % solution x at step k+1
+    raw_x0 = convertSeirCellToMat(x0) + dx;     %x0 with full change in dx
+    capped_x0 = max(raw_x0, 0);                 %Cap each element of x0 to be non-negative
+    
+    %x(:, iter)=convertSeirMatToCell(convertSeirCellToMat(x0) + dx);              % solution x at step k+1
+    x(:, iter)=convertSeirMatToCell(capped_x0);              % solution x at step k+1
+    
     x0=x(:, iter);                 % set value for next guess
     if nf(iter) < tol,          % check for convergence
         % check for convergence
