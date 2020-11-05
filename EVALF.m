@@ -1,4 +1,4 @@
-function f = EVALF(x,p,u)
+function [f Ms Me Mi Os Oe Oi] = EVALF(x,p,u)
 % x : P x 1 vector of inputs {[S1; E1; I1; R1];...
 %                                 [SP; EP; IP; RP]}
 % p : P x 1 struct of params
