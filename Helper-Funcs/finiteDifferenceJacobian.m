@@ -1,4 +1,4 @@
-function[Jf_u, Jf_x] = finiteDifferenceJacobian(f,x0,p,u0,epsX,epsU,doCellOps)
+function[Jf_x, Jf_u] = finiteDifferenceJacobian(f,x0,p,u0,epsX,epsU,doCellOps)
 % Set doCellOps true if you are working with cells; i.e., when modeling SEIR
 % transmission. Otherwise, set to false; i.e., when working with scalar
 % functions.

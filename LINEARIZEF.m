@@ -11,7 +11,7 @@ function [A,B] = LINEARIZEF(f,x0,p,u0,epsX,epsU,doCellOps)
 % evaluating with cells
 
 % Calculate the finite differences
-[Jf_u, Jf_x] = finiteDifferenceJacobian(f,x0,p,u0,epsX,epsU,doCellOps);
+[Jf_x, Jf_u] = finiteDifferenceJacobian(f,x0,p,u0,epsX,epsU,doCellOps);
 
 % K0 should be N x 1 where N is the number of equations in the system
 if doCellOps
