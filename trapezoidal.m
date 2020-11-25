@@ -10,16 +10,10 @@ function xSeirCell = trapezoidal()
     dt = 0.1;
     maxT = 100;
     numTSteps = maxT/dt;
-
-    % Number of nodes
-    P = 4;
-
-    theta = GenThetaMat(P,'symmetric');
-    x0 = GenStateVec(P, 'random'); % Initial State
-    p = GenPStruct(P, theta);
-    u = GenInputVec(P, 1); % Linearization operating point, t=0
-
-    x(:,1) = convertSeirCellToMat(x0);
+    
+    [P, x0SeirCell, p, u] = initializeCambridgeCommunities();
+    x(:,1) = convertSeirCellToMat(x0SeirCell);
+    
     for tStep = 1:numTSteps
 
         % Compute t
@@ -46,7 +40,6 @@ function xSeirCell = trapezoidal()
             f = -getF(xk,p,u,dt,gamma);
 
             % Find J
-    %         J = getJ(P,xk,p,theta,dt);
             J = getJ(xk,p,u,dt);
 
             % Solve 
@@ -58,22 +51,25 @@ function xSeirCell = trapezoidal()
                 break
             end
         end 
+        
         x(:,tStep) = xk;
         xSeirCell(:, tStep) = convertSeirMatToCell(xk);
+        
     end
+    
+    %Add the first initial state
+    xSeirCell = [x0SeirCell xSeirCell];
     
 end
     
 function[f] = getF(x,p,u,dt,gamma)
 
-f = x - (dt/2) * convertSeirCellToMat(EVALF(convertSeirMatToCell(x),p,u)) - gamma;
+    f = x - (dt/2) * convertSeirCellToMat(EVALF(convertSeirMatToCell(x),p,u)) - gamma;
 
 end
-% function J = getJ(P,x,p,theta,dt)
+
 function J = getJ(x,p,u,dt)
 
-J = eye(size(x,1)) - (dt/2) * (finiteDifferenceJacobian('EVALF', convertSeirMatToCell(x), p, u, 1, 1, 1));
+    J = eye(size(x,1)) - (dt/2) * (finiteDifferenceJacobian('EVALF', convertSeirMatToCell(x), p, u, 1, 1, 1));
 
-% convertSeirMatToCell(x)
-% (f,x0,p,u0,epsX,epsU,doCellOps)
 end
