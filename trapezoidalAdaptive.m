@@ -1,6 +1,6 @@
 %% Trapezoidal Euler
 
-function xSeirCell = trapezoidal()
+function [xSeirCell, t] = trapezoidalAdaptive()
 
     clear all
     close all
@@ -15,77 +15,65 @@ function xSeirCell = trapezoidal()
     x(:,1) = convertSeirCellToMat(x0SeirCell);
         
     tStep = 1;
-    t(tStep) = 0;
+    prevT = 0;
     
-%     for tStep = 1:numTSteps
-    while t(tStep) < maxT
-
-        % Compute t
-%         t = dt*(tStep);
+    while prevT < maxT
         
-        t(tStep) = t(tStep) + dt;
-        
-%         if(mod(tStep,1000) == 0)
-%             disp("Step = "+num2str(tStep)+"/"+num2str(numTSteps))
-%         end
-
-        if(tStep>1)
+        if(tStep > 1)
             x(:,tStep) = x(:,tStep-1);
+            
+            %dt must not make the next t pass the end of each day
+            maxCurT = floor(t(tStep-1) + 1);
+            dt = min(dt, maxCurT - t(tStep-1));           
+            
+            t(tStep) = t(tStep-1) + dt;       
+        else       
+            t(tStep) = dt;          
         end
 
         gamma = x(:,tStep) + (dt/2) * convertSeirCellToMat(EVALF(convertSeirMatToCell(x(:,tStep)),p,u));
 
-        % Newton Method
-        maxIter = 500;
-        tol = 1e-7;
-
         xk = squeeze(x(:,tStep));
 
         isConverged = false;
-        [xk, isConverged] = newton(xk, isConverged)
+        [xk, isConverged] = newton(xk, p, u, dt, gamma, isConverged);
         
         while ~isConverged 
             dt = dt/2;
-            [xk, isConverged] = newton(xk, isConverged)
+            [xk, isConverged] = newton(xk, p, u, dt, gamma, isConverged);
         end
         
         dt = dt*2;
-   
-%         for i = 1:maxIter
-% 
-%             % Find f
-%             f = -getF(xk,p,u,dt,gamma);
-% 
-%             % Find J
-%             J = getJ(xk,p,u,dt);
-% 
-%             % Solve 
-%             dx = J\f;
-% 
-%             xk = xk + dx;
-%             nf = norm(abs(f));
-%             if(nf<tol)
-%                 break
-%             end
-%         end 
-        
+      
         x(:,tStep) = xk;
         xSeirCell(:, tStep) = convertSeirMatToCell(xk);
+        
+        prevT = t(tStep);
+        tStep = tStep + 1;
+        
     end
+    
+    %Add the first initial state
+    xSeirCell = [x0SeirCell xSeirCell];
+    t = [0 t];
     
 end
 
-function [xk, isConverged] = newton(xk, isConverged)
+function [xk, isConverged] = newton(xk, p, u, dt, gamma, isConverged)
+
+    % Newton Method
+    maxIter = 1000;
+    tol = 1e-7;
 
     isConverged = false;
     
     for i = 1:maxIter
 
         % Find f
-        f = -getF(xk,p,u,dt,gamma);
+        f = -getF(xk, p, u, dt, gamma);
 
         % Find J
-        J = getJ(xk,p,u,dt);
+        J = getJ(xk, p, u, dt);
 
         % Solve 
         dx = J\f;
