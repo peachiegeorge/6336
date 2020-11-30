@@ -1,5 +1,6 @@
 close all;
 %%
+dt = 0.01;
 xS = x(1:4:end,:);
 xE = x(2:4:end,:);
 xI = x(3:4:end,:);
@@ -28,7 +29,7 @@ set(gcf,'position',[10 61 857 910]);  % 5 x 3
 figure(2);
 t2= tiledlayout(5,3);
 t2.TileSpacing = 'compact';
-tVec = 0.5*(1:size(xS,2));
+tVec = dt*(1:size(xS,2));
 for nb = 1:13
     nexttile;
     plot(tVec,xS(nb,:),'LineWidth',1.5,'Color',plotColors{1}); hold on;
@@ -55,7 +56,7 @@ r1 = animatedline('color','#7E2F8E','LineWidth',1.5); % Purple
 ylabel('# Individuals');
 xlabel('Days');
 legend('S','E','I','R')
-tVec = 0.5*(1:size(xS,2));
+tVec = dt*(1:size(xS,2));
 xlim([0,max(tVec)]);
 ylim([0,max(max(xS))]);
 for i = 1 : size(xS,2)
@@ -63,7 +64,7 @@ for i = 1 : size(xS,2)
     addpoints(e1,tVec(i),xE(nb,i));
     addpoints(i1,tVec(i),xI(nb,i));
     addpoints(r1,tVec(i),xR(nb,i));
-    title(sprintf('Neighborhood %i, t = %.1f days',nb,i*0.5));
+    title(sprintf('Neighborhood %i, t = %.1f days',nb,i*dt));
     pause(0.025);
 end
 %% Geobubble visualization
@@ -86,7 +87,7 @@ geolimits(lat,long);
 for i = 1:size(xS,2)  
     b2.SizeData = xI(:,i);
     b2.SizeLegendTitle = '# Infected';
-    title(sprintf('Cambridge, MA: No Measures, t = %.1f days',i*0.5));
+    title(sprintf('Cambridge, MA: No Measures, t = %.1f days',i*dt));
     grid off;
     frame(i) = getframe(gcf);             % Low resolution
 %     cdata = print('-RGBImage','-r120'); % High-resolution animation
