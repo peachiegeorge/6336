@@ -1,7 +1,7 @@
 %% Trapezoidal Euler
 clear all
 
-dt = 0.5;
+dt = 0.1;
 maxT = 100;
 numTSteps = maxT/dt;
 fileName = 'cambridgeParams';
@@ -17,30 +17,36 @@ theta = GenThetaMat(P,'noMeasures',2); % No Measures
 
 % Initialize state vector
 x0 = GenStateVec(P, 'MIToutbreak'); % Initial State
-
-% Generate parameter matrix
-p_day = GenPStruct(P, theta,'noMeasures',fileName);
-p_night = GenPStruct(P, -theta,'noMeasures',fileName); % - theta if commuting
-
-% Generate input
-u = GenInputVec(P, 1); % Linearization operating point, t=0
-
-x(:,1) = cell2vec(x0,1);
+freq = 1;   % 1 full cycle per day
 for tStep = 1:numTSteps
+    tStep
+    % Generate modulated theta
+    thetaMod(:,:,tStep) = theta*cos(2*pi*freq*(tStep-1)*dt); % Use tStep-1 so the first point is multiplied by 1
+    
+    % Generate parameter matrix
+    % p_day = GenPStruct(P, theta,'noMeasures',fileName);
+    % p_night = GenPStruct(P, -theta,'noMeasures',fileName); % - theta if commuting
+    
+    p = GenPStruct(P,thetaMod(:,:,tStep),'noMeasures',fileName);
+    % Generate input
+    u = GenInputVec(P, 1); % Linearization operating point, t=0
+    
+    x(:,1) = cell2vec(x0,1);
+    
     % Compute t
     t = dt*(tStep);
-    if(t-floor(t)<0.5)
-        day = 1;
-        p = p_day;
-    else
-        day = 0;
-        p = p_night;
-    end
+%     if(t-floor(t)<0.5)
+%         day = 1;
+%         p = p_day;
+%     else
+%         day = 0;
+%         p = p_night;
+%     end
     
-    if(mod(tStep,1) == 0)
-        %disp("Step = "+num2str(tStep)+"/"+num2str(numTSteps))
-        disp("Time = " + num2str(t) + ", Day = " + num2str(day))
-    end
+%     if(mod(tStep,1) == 0)
+%         %disp("Step = "+num2str(tStep)+"/"+num2str(numTSteps))
+%         disp("Time = " + num2str(t) + ", Day = " + num2str(day))
+%     end
     
     if(tStep>1)
         x(:,tStep) = x(:,tStep-1);

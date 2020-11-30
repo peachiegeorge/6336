@@ -94,7 +94,7 @@ for i = 1:size(xS,2)
 end
 
 %% Write frames
-writerObj = VideoWriter('Cambridge-No-Measures.mp4','MPEG-4');
+writerObj = VideoWriter('Outputs\Cambridge-No-Measures.mp4','MPEG-4');
 writerObj.FrameRate = size(xS,2)/10; % Frames/sec
 writerObj.Quality = 100;
 open(writerObj);

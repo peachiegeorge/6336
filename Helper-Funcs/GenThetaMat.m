@@ -5,7 +5,7 @@ function theta = GenThetaMat(P, method, cutOffVal)
 % P: total number of nodes
 % Method: Method for generating thetas
 % theta: P x P matrix of theta parameters
-NORM_FACT = 1; % Maximum possible travel per unit time
+NORM_FACT = 10; % Maximum possible travel per unit time
 if method == "symmetric"
     d = rand(P,1);
     t = triu(bsxfun(@min,d,d.').*rand(P)/NORM_FACT,1); % The upper trianglar random values
