@@ -8,9 +8,9 @@ function [P, x0SeirCell, p, u] = initializeCambridgeCommunities()
     % Number of nodes
     P = 13;
     
-    theta = GenThetaMat(P,'symmetric');
+    theta = GenThetaMat(P, "noMeasures", 0);
     
-    p = GenPStruct(P, theta);
+    p = GenPStruct(P, theta, "noMeasures");
     u = GenInputVec(P, 1); % Linearization operating point, t=0
 
     % Initialize first state
