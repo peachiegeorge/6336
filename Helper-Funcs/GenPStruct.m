@@ -5,14 +5,13 @@ function p = GenPStruct(P,theta,method,saveFile)
 % theta: matrix of thetas
 % p: P x 1 cell array
 % Parameters from https://link.springer.com/article/10.1007/s11071-020-05743-y#Sec3
-NORM_FACT = 2e5;
+NORM_FACT = 1;
 thetaOG = theta;
 %load(saveFile);
 %load('cambridgeParams');
 p(P, 1).beta = 0;  % Initialize struct array
+betaVal = [10,20,1,5,5,1,1,1,1,1,1,1,1];
 
-betaVal = [10,20,1,5,5,1,1,1,1,1,1,1,1]
-NORM_FACT = 2e4;
 if(method == "noMeasures")
     for i = 1:P
         p(i,1).beta = betaVal(i) / NORM_FACT; %[days^-1 person^1]
