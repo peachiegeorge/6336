@@ -27,7 +27,7 @@ for iter = 1:maxiters
   
 % Make the new Mp vector orthogonal to the previous Mp vectors,
 % and the p vectors M^TM orthogonal to the previous p vectors
-  for j=1:iter-1,
+  for j=1:iter-1
     beta = Mp(:,iter)' * Mp(:,j); 
     p(:,iter) = p(:,iter) - beta * p(:,j); 
     Mp(:,iter) = Mp(:,iter) - beta * Mp(:,j);
@@ -60,12 +60,12 @@ for iter = 1:maxiters
 end
 
 % Notify user of convergence
-if r_norms(iter+1) > (tol * r_norms(1))
-  fprintf(1, 'GCR NONCONVERGENCE!!!\n');
-  x = [];
-else 
-  fprintf(1, 'GCR converged in %d iterations\n', iter);
-end
+% if r_norms(iter+1) > (tol * r_norms(1))
+%   fprintf(1, 'GCR NONCONVERGENCE!!!\n');
+%   x = [];
+% else 
+%   fprintf(1, 'GCR converged in %d iterations\n', iter);
+% end
 
 % Scale the r_norms with respect to the initial residual norm
 r_norms = r_norms / r_norms(1);
