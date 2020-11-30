@@ -10,8 +10,7 @@ if doCellOps
     numEquations = size(x0,1)*numEquationsPerNode;
 else
     numEquationsPerNode = 1;
-    numEquations = size(x0,1);
-    
+    numEquations = size(x0,1);  
 end
 
 Jf_u = zeros(numEquations,numEquations);
