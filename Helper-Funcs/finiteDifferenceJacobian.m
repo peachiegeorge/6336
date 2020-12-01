@@ -21,13 +21,13 @@ for node = 1:numNodes
         uStep = u0;
         xStep = x0;
         if doCellOps
-            uStep{node}(eq) = u0{node}(eq) + epsU;
+            % uStep{node}(eq) = u0{node}(eq) + epsU;
             xStep{node}(eq) = x0{node}(eq) + epsX;
-            fDiffU = cellfun(@minus, feval(f,x0,p,uStep), feval(f,x0,p,u0), 'Un',0);
+            % fDiffU = cellfun(@minus, feval(f,x0,p,uStep), feval(f,x0,p,u0), 'Un',0);
             fDiffX = cellfun(@minus, feval(f,xStep,p,u0), feval(f,x0,p,u0), 'Un',0);
             %  Jf_u((node-1)*numEquationsPerNode+eq,:) = (1/epsU) * cell2mat(fDiffU);
             %  Jf_x((node-1)*numEquationsPerNode+eq,:) = (1/epsX) * cell2mat(fDiffX);
-            Jf_u(:,(node-1)*numEquationsPerNode + eq) = (1/epsU) * cell2mat(fDiffU);
+            % Jf_u(:,(node-1)*numEquationsPerNode + eq) = (1/epsU) * cell2mat(fDiffU);
             Jf_x(:,(node-1)*numEquationsPerNode + eq) = (1/epsX) * cell2mat(fDiffX);
         else
             uStep(node) = u0(node) + epsU;

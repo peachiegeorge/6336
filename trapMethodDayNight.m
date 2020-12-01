@@ -1,80 +1,85 @@
 %% Trapezoidal Euler
-clear all, clc;
-dt = 1;					% fraction of a day
-maxT = 100;				% days
-numTSteps = maxT/dt;	% number of time steps
-cutoff = 2;				% neighborhood to cut off
-P = 13;					% number of nodes
+clc; clear; close all;
+dt = 0.5;						% fraction of a day
+maxT = 100;						% days
+numTSteps = maxT/dt;			% number of time steps
+cutoff = 2;						% neighborhood to cut off
+useTGCR = false;				% use Newton-TGCR method instead of LU solver
+useAdaptiveTimestep = false;	% use adaptive timestep in trapezoidal method
+P = 13;							% number of nodes
+rng(5);							% start random number generator seed at same value
 fileName = 'cambridgeParams';
 cases = {'zeros','noMeasures','cutOff','cutOffMultiple'};
 
 for caseNum = 1:length(cases)
-	% Generate theta matrix
-	theta = GenThetaMat(P,cases{caseNum},cutoff); % No Measures
-	
 	% Initialize state vector
 	x0 = GenStateVec(P, 'MIToutbreak'); % Initial State
-	
-	% freq = 1;   % 1 full cycle per 90 days
-	for tStep = 1:numTSteps
-		% Generate modulated theta
-		% thetaMod(:,:,tStep) = theta*cos(2*pi*freq*(tStep-1)*dt); % Use tStep-1 so the first point is multiplied by 1
-		
-		% Generate parameter matrix
-		% p_day = GenPStruct(P, theta,'noMeasures',fileName);
-		% p_night = GenPStruct(P, -theta,'noMeasures',fileName); % - theta if commuting
-		
-		% p = GenPStruct(P,thetaMod(:,:,tStep),'noMeasures',fileName);
-		p = GenPStruct(P,theta,'noMeasures',fileName);
-		
+	theta = GenThetaMat(P,cases{caseNum},cutoff); % No Measures
+	u = GenInputVec(P, 1);
+	p = GenPStruct(P,theta,cases{caseNum},fileName);
+	if useAdaptiveTimestep
 		% Generate input
-		u = GenInputVec(P, 1); % Linearization operating point, t=0
-		
-		x(:,1) = cell2vec(x0,1);
-		
-		% Compute t
-		%     t = dt*(tStep);
-		%     if(t-floor(t)<0.5)
-		%         day = 1;
-		%         p = p_day;
-		%     else
-		%         day = 0;
-		%         p = p_night;
-		%     end
-		
-		%     if(mod(tStep,1) == 0)
-		%         %disp("Step = "+num2str(tStep)+"/"+num2str(numTSteps))
-		%         disp("Time = " + num2str(t) + ", Day = " + num2str(day))
-		%     end
-		
-		if(tStep > 1)
-			x(:,tStep) = x(:, tStep-1);
-		end
-		
-		gamma = x(:,tStep) + (dt/2) * cell2vec(EVALF(convertSeirMatToCell(x(:,tStep)),p,u),1);
-		
-		% Newton Method
-		maxIter = 1000;
-		tol = 1e-7;
-		xk = squeeze(x(:,tStep));
-		for i = 1:maxIter
-			F = getF(xk,p,u,dt,gamma);	 % Find F
-			J = getJ(P,xk,p,u,theta,dt); % Find J
-			dx = J\(-F);			% Solve
-			delta =	1e-12;			% tolerance for TGCR solver
-			eps = 0.01;				% stepsize for estimation of Jacobian in TGCR
-			% fhand = @(xg) getF(xg,p,u,dt,gamma);
-			% dx = modtgcr(fhand,xk,-F,delta,eps,500);
-			xk = xk + dx;   % Update
-			nf = norm(abs(F));
-			fprintf('Case %d, Timestep %d, Newton Iter %d, nf %.6f\n',caseNum,tStep,i,nf)
-			if(nf < tol)
-				break
+		[x, tVecAdaptive, ~] = trapezoidalFlipThetaAdaptive(P, x0, p, u, maxT, dt);
+	else
+		% Generate theta matrix
+		for tStep = 1:numTSteps
+			% Generate parameter matrix
+			p_day = GenPStruct(P, theta,cases{caseNum},fileName);
+			p_night = GenPStruct(P, -theta,cases{caseNum},fileName); % -theta if commuting
+			
+			% Generate input
+			u = GenInputVec(P, 1);
+			
+			% Compute t
+			t = dt*(tStep);
+			
+			% Choose day or night
+			if(t - floor(t) <= 0.5)
+				day = 1;
+				p = p_day;
+			else
+				day = 0;
+				p = p_night;
 			end
+			
+			% Initialize state at current timestep to previous state
+			x(:,1) = cell2vec(x0,1);
+			if(tStep > 1)
+				x(:,tStep) = x(:, tStep-1);
+			end
+			
+			% Compute gamma
+			gamma = x(:,tStep) + (dt/2) * cell2vec(EVALF(convertSeirMatToCell(x(:,tStep)),p,u),1);
+			
+			% Newton-solve for current state
+			maxIter = 1000;
+			tol = 1e-7;
+			xk = squeeze(x(:,tStep));
+			for i = 1:maxIter
+				F = getF(xk,p,u,dt,gamma);		% Find F
+				J = getJ(P,xk,p,u,theta,dt);	% Find J
+				if useTGCR
+					delta =	1e-12;				% tolerance for TGCR solver
+					eps = 1000;					% stepsize for estimation of Jacobian in TGCR
+					maxGCRIter = 500;			% Maximum # of iterations for GCR
+					fhand = @(xg) getF(xg,p,u,dt,gamma);
+					dx = modtgcr(fhand,xk,-F,delta,eps,maxGCRIter);
+				else % MATLAB LU solver
+					dx = J\(-F);				% Solve
+				end
+				xk = xk + dx;					% Update
+				xk = max(xk,0);					% Set minimum state to 0 people
+				nf = norm(abs(F));
+				ndx = norm(dx);
+				fprintf('Case %d, Day %d, Timestep %d, Time %.2f, Newton Iter %d, nf %i, ndx %i\n',...
+					caseNum,day,tStep,t,i,nf,ndx)
+				if(nf < tol || ndx < tol)
+					break
+				end
+			end
+			x(:,tStep) = xk;
 		end
-		x(:,tStep) = xk;
 	end
-	% save('Outputs\x-NoMeasures.mat','x');
 	saveStr = ['Outputs\x-' cases{caseNum} '.mat'];
 	save(saveStr,'x','dt');
 end
