@@ -6,7 +6,7 @@ numTSteps = maxT/dt;			% number of time steps
 cutoff = 2;						% neighborhood to cut off
 useTGCR = false;				% use Newton-TGCR method instead of LU solver
 useAdaptiveTimestep = false;	% use adaptive timestep in trapezoidal method
-P = 13;							% number of nodes
+P = 1;							% number of nodes
 rng(5);							% start random number generator seed at same value
 fileName = 'cambridgeParams';
 cases = {'zeros','noMeasures','cutOff','cutOffMultiple'};

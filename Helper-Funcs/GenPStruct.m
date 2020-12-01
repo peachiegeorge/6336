@@ -21,7 +21,7 @@ if(method == "noMeasures")
         p(i,1).nu = 1e-4;   % Community death rate [days^-1]
         p(i,1).theta = thetaOG; % Extract row for that node
     end
-elseif(method == "cutOffMultiple")
+elseif(method == "cutOffMultiple" && P > 1)
     for i = 1:P
         p(i,1).beta = betaVal(i) / NORM_FACT; %[days^-1 person^1]
         p(i,1).sigma = 0.1; %[days^-1]
@@ -33,15 +33,16 @@ elseif(method == "cutOffMultiple")
     p(1,1).beta = 0.5*p(1,1).beta;
     p(2,1).beta = 0.5*p(2,1).beta;
     p(5,1).beta = 0.5*p(4,1).beta;
-
-else
+elseif(method == "noTravel")
     for i = 1:P
-    p(i,1).beta = 0.001; %[days^-1 person^1]
-    p(i,1).sigma = 0.1; %[days^-1]
-    p(i,1).gamma = 0.1; %[days^-1]
-    p(i,1).mu = 1e-4;   % Community birth rate [days^-1]
-    p(i,1).nu = 1e-4;   % Community death rate [days^-1]
-    p(i,1).theta = theta; % Extract row for that node
+        p(i,1).beta = betaVal(i) / NORM_FACT; %[days^-1 person^1]
+        p(i,1).sigma = 0.1; %[days^-1]
+        p(i,1).gamma = 0.1; %[days^-1]
+        p(i,1).mu = 1e-4;   % Community birth rate [days^-1]
+        p(i,1).nu = 1e-4;   % Community death rate [days^-1]
+        p(i,1).theta = theta; % Extract row for that node
     end
+else
+    disp('Not a valid case for GenPStruct.');
 end
 

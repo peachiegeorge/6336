@@ -17,7 +17,7 @@ elseif method == "upTri"
 elseif method == "random"
 	theta = randfixedsum(P,P,1,0,1)/NORM_FACT;
 	theta(1:size(theta,2)+1:end) = 0;
-elseif method == "zeros"
+elseif method == "noTravel"
 	theta = zeros(P,P);
 elseif method == "noMeasures"
 	load('Cambridge\cambridgeParams.mat');
@@ -49,13 +49,15 @@ elseif method == "cutOffMultiple"
 			theta2 = jobs(j) * pop(j) * poverty(i) / NORM_FACT;
 			theta(i,j) = max(theta1,theta2);
 		end
-	end
-	theta(1,:) = 0;
-	theta(:,1) = 0;
-	theta(2,:) = 0;
-	theta(:,2) = 0;
-	theta(5,:) = 0;
-	theta(:,5) = 0;
+    end
+    % 10% attenuation of travel
+    attFac = 0.05;
+	theta(1,:) = attFac*theta(1,:);
+	theta(:,1) = attFac*theta(:,1);
+	theta(2,:) = attFac*theta(2,:);
+	theta(:,2) = attFac*theta(:,2);
+	theta(5,:) = attFac*theta(5,:);
+	theta(:,5) = attFac*theta(:,5);
 	theta = theta(1:P,1:P);
 else
 	disp('Not a valid case for GenThetaMat.');

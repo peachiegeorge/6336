@@ -47,7 +47,7 @@ for caseNum = 1 : length(cases)
 		title(sprintf('Neighborhood %d',nb));
 	end
 	set(gcf,'position',[920 61 857 910]);  % 5 x 3
-	%% Plot time evolution for a single neighborhood
+	%% Plot animation for a single neighborhood
 	nb = 2; % 1:13
 	figure(3);
 	t2= tiledlayout(5,3);
