@@ -9,7 +9,7 @@ fileName = 'cambridgeParams';
 
 % Initialize state vector
 x0 = GenStateVec(P, initCond); % Initial State
-theta = GenThetaMat(P, simCase, cutoff); % No Measures
+theta = GenThetaMat(P, simCase, 0); % No Measures
 u = GenInputVec(P, 1);
 p = GenPStruct(P, theta, simCase, fileName);
 if useAdaptiveTimestep

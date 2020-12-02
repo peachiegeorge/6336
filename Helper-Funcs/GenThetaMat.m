@@ -56,6 +56,8 @@ elseif method == "cutOffMultiple"
 	theta(:,1) = attFac*theta(:,1);
 	theta(2,:) = attFac*theta(2,:);
 	theta(:,2) = attFac*theta(:,2);
+	theta(4,:) = attFac*theta(4,:);
+	theta(:,4) = attFac*theta(:,4);
 	theta(5,:) = attFac*theta(5,:);
 	theta(:,5) = attFac*theta(:,5);
 	theta = theta(1:P,1:P);
