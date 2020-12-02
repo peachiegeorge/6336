@@ -25,7 +25,7 @@ for i = 1 : step : size(yS,2)
     addpoints(e1,tVec(i),yE(i));
     addpoints(i1,tVec(i),yI(i));
     addpoints(r1,tVec(i),yR(i));
-    title(sprintf('Summed Neighborhood SEIR, t = %.1f days',(i+step-1)*dt));
+    % title(sprintf('Summed Neighborhood SEIR, t = %.1f days',(i+step-1)*dt));
     pause(0.033*speed); % ~30 updates/sec
 end
 end

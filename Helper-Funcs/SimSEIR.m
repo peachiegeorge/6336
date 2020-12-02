@@ -1,9 +1,8 @@
-function [y x] = SimSEIR(numNeighborhoods,simCase,initCond)
-dt = 0.5;						% fraction of a day
+function [y x] = SimSEIR(numNeighborhoods,simCase,initCond,dt)
 maxT = 100;						% days
 numTSteps = maxT/dt;			% number of time steps
 cutoff = 2;						% neighborhood to cut off
-useTGCR = false;				% use Newton-TGCR method instead of LU solver
+useGMRES = false;				% use GMRES method instead of LU solver
 useAdaptiveTimestep = false;	% use adaptive timestep in trapezoidal method
 P = numNeighborhoods;			% number of neighborhoods
 fileName = 'cambridgeParams';
@@ -54,7 +53,7 @@ else
         for i = 1:maxIter
             F = getF(xk,p,u,dt,gamma);		% Find F
             J = getJ(P,xk,p,u,theta,dt);	% Find J
-            if useTGCR
+            if useGMRES
                 delta =	1e-12;				% tolerance for TGCR solver
                 eps = 1000;					% stepsize for estimation of Jacobian in TGCR
                 maxGCRIter = 500;			% Maximum # of iterations for GCR

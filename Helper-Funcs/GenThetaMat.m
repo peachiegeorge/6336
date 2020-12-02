@@ -51,7 +51,7 @@ elseif method == "cutOffMultiple"
 		end
     end
     % 10% attenuation of travel
-    attFac = 0.05;
+    attFac = 0.01;
 	theta(1,:) = attFac*theta(1,:);
 	theta(:,1) = attFac*theta(:,1);
 	theta(2,:) = attFac*theta(2,:);
