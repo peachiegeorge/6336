@@ -26,7 +26,7 @@ for n=1:ceil((t_stop - t_start) / timestep)
     X(:,n+1)= cellfun(@(b, c) b + c, X(:,n), dt_time_f, 'UniformOutput', false);
     
    
-%     if mod(n,10) == 0
+%     if mod(n,100) == 0
 %         plotNum = plotNum + 1;
 %         [gr, markerSizes, edgeCmap] = VisualizeNetwork(X(:,n+1),p);
 %         
