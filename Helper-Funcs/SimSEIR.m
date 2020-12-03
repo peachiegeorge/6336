@@ -1,4 +1,4 @@
-function [y x] = SimSEIR(numNeighborhoods,simCase,initCond,dt)
+function [y x p] = SimSEIR(numNeighborhoods,simCase,initCond,dt)
 maxT = 100;						% days
 numTSteps = maxT/dt;			% number of time steps
 cutoff = 2;						% neighborhood to cut off
@@ -11,32 +11,16 @@ fileName = 'cambridgeParams';
 x0 = GenStateVec(P, initCond); % Initial State
 theta = GenThetaMat(P, simCase, 0); % No Measures
 u = GenInputVec(P, 1);
-p = GenPStruct(P, theta, simCase, fileName);
+p = GenPStruct(P, theta, simCase, fileName); % Generate parameter matrix
 if useAdaptiveTimestep
     % Generate input
     [x, tVecAdaptive, ~] = trapezoidalFlipThetaAdaptive(P, x0, p, u, maxT, dt);
 else
     % Generate theta matrix
-    for tStep = 1:numTSteps
-        % Generate parameter matrix
-        % p_day =   GenPStruct(P,  theta, simCase, fileName);
-        % p_night = GenPStruct(P, -theta, simCase, fileName); % -theta if commuting
-        
-        % Generate input
-        u = GenInputVec(P, 1);
-        
+    for tStep = 1:numTSteps  
         % Compute t
         t = dt*(tStep);
-        
-        % Choose day or night
-%         if(t - floor(t) < 0.5)
-%             day = 1;
-%             p = p_day;
-%         else
-%             day = 0;
-%             p = p_night;
-%         end
-        
+
         % Initialize state at current timestep to previous state
         x(:,1) = cell2vec(x0,1);
         if(tStep > 1)
