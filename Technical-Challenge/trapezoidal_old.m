@@ -1,26 +1,31 @@
 %% Trapezoidal Euler
 
-function [xSeirCell, newtonLastIter] = trapezoidal(P, x_start, p, u, t_stop, timestep)
+function xSeirCell = trapezoidal()
+
+    clear all
+    close all
+
+    rng(5);
     
-    dt = timestep;
-    maxT = t_stop;
+    dt = 0.1;
+    maxT = 100;
     numTSteps = maxT/dt;
     
-    x0SeirCell = x_start;
+    [P, x0SeirCell, p, u] = initializeCambridgeCommunities();
     x(:,1) = convertSeirCellToMat(x0SeirCell);
     
     for tStep = 1:numTSteps
 
         % Compute t
         t = dt*(tStep);
-        if(mod(tStep,10) == 0)
+        if(mod(tStep,1000) == 0)
             disp("Step = "+num2str(tStep)+"/"+num2str(numTSteps))
         end
 
         if(tStep>1)
             x(:,tStep) = x(:,tStep-1);
         end
-        
+
         gamma = x(:,tStep) + (dt/2) * convertSeirCellToMat(EVALF(convertSeirMatToCell(x(:,tStep)),p,u));
 
         % Newton Method
@@ -40,27 +45,15 @@ function [xSeirCell, newtonLastIter] = trapezoidal(P, x_start, p, u, t_stop, tim
             % Solve 
             dx = J\f;
 
-            %To prevent dx from making negative people   
-            dx = max(-xk, dx);
-            
             xk = xk + dx;
-            
-            %Set mininum state to 0 people (no negative value)
-            xk = max(xk, 0);           
-            
             nf = norm(abs(f));
-            ndx = norm(dx);
-            
-            if (nf<tol) || (ndx<tol)
+            if(nf<tol)
                 break
             end
-        end      
+        end 
         
         x(:,tStep) = xk;
         xSeirCell(:, tStep) = convertSeirMatToCell(xk);
-        
-        lastIter = i;
-        newtonLastIter(tStep) = lastIter;
         
     end
     
@@ -77,7 +70,6 @@ end
 
 function J = getJ(x,p,u,dt)
 
-%     J = eye(size(x,1)) - (dt/2) * (finiteDifferenceJacobian('EVALF', convertSeirMatToCell(x), p, u, 1, 1, 1));
-    J = eye(size(x,1)) - (dt/2) * (finiteDifferenceJacobian('EVALF', convertSeirMatToCell(x), p, u, 0.1, 100, 1));
+    J = eye(size(x,1)) - (dt/2) * (finiteDifferenceJacobian('EVALF', convertSeirMatToCell(x), p, u, 1, 1, 1));
 
 end
