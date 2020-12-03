@@ -1,23 +1,59 @@
-function f = geovisSEIR(x)
+function f = geovisSEIR(x,dt,p,plotEdges)
 f = figure;
 xS = x(1:4:end,:);
 xE = x(2:4:end,:);
 xI = x(3:4:end,:);
 xR = x(4:4:end,:);
-dt = 0.5;
 step = 1/dt;
 cambridge = readtable('Cambridge/cam.xlsx');
-b = geobubble(cambridge.lat,cambridge.lon,xI(:,1),'BubbleColorList',[0.9290, 0.6940, 0.1250]);
+p = p(1);	% Just take single neighborhood if there are multiple
+
+if plotEdges
+	% Find row,col pairs in upper triangular of theta above first superdiagonal
+	ut = triu(p.theta,1);
+	[r, c] = find(ut);
+	edgeIdxPair = [r c];
+	edgeCoords = getLatLon(cambridge, edgeIdxPair);
+	
+	% Generate lookup table
+	Cmap = colormap('jet');
+	thetaMax = max(abs(ut(:)));
+	cmapIdx = floor(size(Cmap,1)*ut(ut~=0)./thetaMax);
+	cmapIdx(cmapIdx == 0) = cmapIdx(cmapIdx == 0) + 1;
+	
+	% Plot edges
+	numEdges = size(edgeCoords{1},1);
+	geoaxes;
+	for i = 1:numEdges
+		bedges = geoplot(edgeCoords{1}(i,:),edgeCoords{2}(i,:),'LineWidth',0.1,'Color',Cmap(cmapIdx(i),:));
+		hold on;
+		colorbar;
+	end
+end
+
+% Plot nodes
+bnodes = geobubble(cambridge.lat,cambridge.lon,xI(:,1),'BubbleColorList',[0.9290, 0.6940, 0.1250]);
 sizeMax = max(max(xI));
 sizeMin = min(min(xI));
-b.SizeLimits = [floor(sizeMin) floor(sizeMax)];
-b.BubbleWidthRange = [1 20];
+bnodes.SizeLimits = [floor(sizeMin) floor(sizeMax)];
+bnodes.BubbleWidthRange = [1 20];
+
+% Animation
 for i = 1:(1/dt):size(xS,2)
-    b.SizeData = xI(:,i);
-    b.SizeLegendTitle = '# Infected';
-    title(sprintf('Cambridge, MA, t = %.1f days',(i+step-1)*dt));
-    grid off;
-    drawnow;
+	bnodes.SizeData = xI(:,i);
+	bnodes.SizeLegendTitle = '# Infected';
+	title(sprintf('Cambridge, MA, t = %.1f days',(i+step-1)*dt));
+	grid off;
+	drawnow;
 end
 end
 
+%% Functions
+function edgeCoords = getLatLon(tbl, edgeIdxPair)
+% Table contains the longitude and latitude coordinates
+% edgeIdxPair are pairs of indices for nonzero values in upper superdiagonal of theta
+% edgeCoords is a cell array
+rLats = [tbl.lat(edgeIdxPair(:,1)), tbl.lat(edgeIdxPair(:,2))];	% Get lat/lon for row indices
+cLong = [tbl.lon(edgeIdxPair(:,1)), tbl.lon(edgeIdxPair(:,2))];	% Get lat/lon for col indices
+edgeCoords = {rLats cLong};
+end

@@ -1,4 +1,4 @@
-function theta = GenThetaMat(P, method, cutOffVal)
+ = function theta = GenThetaMat(P, method, cutOffVal)
 % Function to generate matrix of random thetas given # of nodes
 % For future implementation: parameterize beta using gravitational or
 % radiation model.
