@@ -15,10 +15,10 @@ function plotSEIRTestCase(t_start, t_stop, matState, model_type, timestep_desc, 
 
         N(i,:) = sum(state, 1);
 
-        figure;
-        plotSEIR(t_start, t_stop, state, seir_ylabel, yIsInteger);
-        seir_title = strcat(model_type, ' Simulation with ', timestep_desc, ' of Node', ' ', num2str(i));
-        title(seir_title);
+%         figure;
+%         plotSEIR(t_start, t_stop, state, seir_ylabel, yIsInteger);
+%         seir_title = strcat(model_type, ' Simulation with ', timestep_desc, ' of Node', ' ', num2str(i));
+%         title(seir_title);
 
         if i == 1
             sumState = state;     
@@ -33,11 +33,11 @@ function plotSEIRTestCase(t_start, t_stop, matState, model_type, timestep_desc, 
     formatFig(f);
 
     %N of each node
-    figure;
-    imagesc(N(:,:));
-    title(['N(t) of ', model_type, ' Simulation with ', timestep_desc]);
-    xlabel('Timestep');
-    ylabel('Node');
-    colorbar;
+%     figure;
+%     imagesc(N(:,:));
+%     title(['N(t) of ', model_type, ' Simulation with ', timestep_desc]);
+%     xlabel('Timestep');
+%     ylabel('Node');
+%     colorbar;
     
 end

@@ -43,8 +43,8 @@ function [xSeirCell, t, newtonLastIter] = trapezoidalFlipThetaAdaptive(P, x_star
             [xk, isConverged, lastIter] = newton(xk, p, u, dt, gamma, isConverged);
         end
         
-        %dt won't be higher than 1
-        dt = min(1, dt*2);
+        %dt won't be higher than 0.4
+        dt = min(0.4, dt*2);
         
         %To avoid precision error indirectly from other variables
         dt = max(0.05, dt);
