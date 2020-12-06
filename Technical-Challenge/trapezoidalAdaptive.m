@@ -30,17 +30,22 @@ function [xSeirCell, t, newtonLastIter] = trapezoidalFlipThetaAdaptive(P, x_star
             t(tStep) = dt;          
         end        
                
-        gamma = x(:,tStep) + (dt/2) * convertSeirCellToMat(EVALF(convertSeirMatToCell(x(:,tStep)),p,u));
+        
 
         xk = squeeze(x(:,tStep));
 
         isConverged = false;
+        
+        gamma = x(:,tStep) + (dt/2) * convertSeirCellToMat(EVALF(convertSeirMatToCell(x(:,tStep)),p,u));
         [xk, isConverged, lastIter] = newton(xk, p, u, dt, gamma, isConverged);
         
         while ~isConverged 
+ 
             %dt won't go below 0.05
-            dt = max(0.05, dt/2);
-            [xk, isConverged, lastIter] = newton(xk, p, u, dt, gamma, isConverged);
+            dt = max(0.05, dt/2);  
+            
+            gamma = x(:,tStep) + (dt/2) * convertSeirCellToMat(EVALF(convertSeirMatToCell(x(:,tStep)),p,u));
+            [xk, isConverged, lastIter] = newton(xk, p, u, dt, gamma, isConverged);      
         end
         
         %dt won't be higher than 0.4
