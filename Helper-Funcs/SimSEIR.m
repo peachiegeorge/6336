@@ -9,9 +9,13 @@ fileName = 'cambridgeParams';
 
 % Initialize state vector
 x0 = GenStateVec(P, initCond); % Initial State
+
+% Set simulation parameters depending on case
 theta = GenThetaMat(P, simCase, 0); % No Measures
 u = GenInputVec(P, 1);
 p = GenPStruct(P, theta, simCase, fileName); % Generate parameter matrix
+
+% Trapezoidal integration
 if useAdaptiveTimestep
     % Generate input
     [x, tVecAdaptive, ~] = trapezoidalFlipThetaAdaptive(P, x0, p, u, maxT, dt);
@@ -38,11 +42,10 @@ else
             F = getF(xk,p,u,dt,gamma);		% Find F
             J = getJ(P,xk,p,u,theta,dt);	% Find J
             if useGMRES
-                delta =	1e-12;				% tolerance for TGCR solver
-                eps = 1000;					% stepsize for estimation of Jacobian in TGCR
-                maxGCRIter = 500;			% Maximum # of iterations for GCR
-                fhand = @(xg) getF(xg,p,u,dt,gamma);
-                dx = modtgcr(fhand,xk,-F,delta,eps,maxGCRIter);
+                restart = 10;				% tolerance for TGCR solver
+                gmresTol = 1000;					% stepsize for estimation of Jacobian in TGCR
+                maxGMRESIter = 500;			% Maximum # of iterations for GCR
+                dx = gmres(J,-F);
             else % MATLAB LU solver
                 dx = J\(-F);				% Solve
             end
@@ -50,7 +53,7 @@ else
             xk = max(xk,0);					% Set minimum state to 0 people
             nf = norm(abs(F));
             ndx = norm(dx);
-            fprintf('Timestep %d, Time %.2f, Newton Iter %d, nf %i, ndx %i\n',tStep,t,i,nf,ndx)
+            fprintf('Timestep %d, Day %.2f, Newton Iter %d, nf %i, ndx %i\n',tStep,t,i,nf,ndx)
             if(nf < tol || ndx < tol)
                 break
             end
