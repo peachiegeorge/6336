@@ -9,17 +9,25 @@ function X = forwardEulerFlipTheta(P, eval_f, x_start, p, eval_u, t_start, t_sto
 
 % copyright Luca Daniel, MIT 2018
 
-XTemp = cell(P, ceil((t_stop - t_start) / timestep) + 1);
-X = cell(P, ceil((t_stop - t_start) / timestep) + 1);
-t = zeros(1,ceil((t_stop - t_start) / timestep) + 1);
+% XTemp = cell(P, ceil((t_stop - t_start) / timestep) + 1);
+% X = cell(P, ceil((t_stop - t_start) / timestep) + 1);
+% t = zeros(1,ceil((t_stop - t_start) / timestep) + 1);
 X(:,1) = x_start;
 t(1) = t_start;
 plotNum = 0;
 
-for n=1:ceil((t_stop - t_start) / timestep)
+numTSteps = ceil((t_stop - t_start) / timestep);
+
+for n=1:numTSteps
     
     dt = min(timestep, (t_stop - t(n)));
     t(n+1)= t(n) + dt;
+    
+    %Show status at the end of each day
+    if mod(t(n), 1) == 0
+        disp("At time t = " + num2str(t(n)));
+    end    
+    
     u = feval(eval_u, P, t(n));    
     
     [f] = feval(eval_f, X(:,n), p, u);
