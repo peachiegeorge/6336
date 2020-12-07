@@ -35,7 +35,7 @@ else
     sizeMax = max(max(xI));
     sizeMin = min(min(xI));
     bnodes.SizeLimits = [floor(sizeMin) floor(sizeMax)];
-    bnodes.BubbleWidthRange = [1 20];
+    bnodes.BubbleWidthRange = [1 40];
     bnodes.ZoomLevel = 13.375;
     set(gcf,'position',[389 165 1129 741]);
 %     geolimits(1.005*[42.3559, 42.3974], 1.005*[-71.1547, -71.0772]);
