@@ -35,6 +35,11 @@ for i = 1:length(x)
         x{i}(2) = 0;
         x{i}(3) = 1;
         x{i}(4) = 0;
+    elseif method == "validationCase"
+        x{i} = 130000*ones(4,1) - 1;
+        x{i}(2) = 0;
+        x{i}(3) = 1;
+        x{i}(4) = 0;
     else
         disp('Not a valid case for GenThetaMat.');
     end

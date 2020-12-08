@@ -42,6 +42,14 @@ elseif(method == "noTravel")
         p(i,1).nu = 1e-4;   % Community death rate [days^-1]
         p(i,1).theta = theta; % Extract row for that node
     end
+elseif(method == "validationCase")
+    % Single neighborhood only
+    p(1,1).beta = 0.5; %[days^-1 person^1]
+    p(1,1).sigma = 1/5; %[days^-1]
+    p(1,1).gamma = 1/10; %[days^-1]
+    p(1,1).mu = 1e-4;   % Community birth rate [days^-1]
+    p(1,1).nu = 1e-4;   % Community death rate [days^-1]
+    p(1,1).theta = theta; % Extract row for that node
 else
     disp('Not a valid case for GenPStruct.');
 end

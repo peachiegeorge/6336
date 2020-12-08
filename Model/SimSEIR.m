@@ -1,5 +1,4 @@
-function [y x p] = SimSEIR(numNeighborhoods,simCase,initCond,dt)
-maxT = 100;						% days
+function [y x p] = SimSEIR(numNeighborhoods,simCase,initCond,dt,maxT)
 numTSteps = maxT/dt;			% number of time steps
 cutoff = 2;						% neighborhood to cut off
 useGMRES = false;				% use GMRES method instead of LU solver

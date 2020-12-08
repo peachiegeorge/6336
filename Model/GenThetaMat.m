@@ -17,7 +17,7 @@ elseif method == "upTri"
 elseif method == "random"
 	theta = randfixedsum(P,P,1,0,1)/NORM_FACT;
 	theta(1:size(theta,2)+1:end) = 0;
-elseif method == "noTravel"
+elseif method == "noTravel" || method == "validationCase"
 	theta = zeros(P,P);
 elseif method == "noMeasures"
 	load('Cambridge\cambridgeParams.mat');

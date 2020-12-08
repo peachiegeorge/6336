@@ -5,34 +5,36 @@
 %% Setup
 clc; close all; clear all;
 addpath(genpath('C:\Users\Jason\Documents\Git\6336InfectiousDisease'))
-cases = {'noTravel','noMeasures','cutOffMultiple'};
-stateInitType = {'singleInfectedAll', 'MIToutbreak'};
-
-%% Simulation and save results
+cases = {'noTravel','noMeasures','cutOffMultiple','validationCase'};
+stateInitType = {'singleInfectedAll', 'MIToutbreak','validationCase'};
 dt = 0.05;
-% [ySim1, xSim1, pSim1] = SimSEIR(1,  cases{1}, stateInitType{1}, dt);  % Simulation 1: Simple SEIR model, single neighborhood
-% [ySim2, xSim2, pSim2] = SimSEIR(13, cases{2}, stateInitType{2}, dt);  % Simulation 2
-% [ySim3, xSim3, pSim3] = SimSEIR(13, cases{3}, stateInitType{2}, dt);  % Simulation 3  
+load('Live-Demo\Sim1.mat');
+load('Live-Demo\Sim2.mat');
+load('Live-Demo\Sim3.mat');
+cambridge = readtable('Cambridge/cam.xlsx');
+%% Simulation and save results
+% [ySim1, xSim1, pSim1] = SimSEIR(1,  cases{4}, stateInitType{3}, dt, 200);  % Simulation 1: Simple SEIR model, single neighborhood
+% [ySim2, xSim2, pSim2] = SimSEIR(13, cases{2}, stateInitType{2}, dt, 100);  % Simulation 2
+% [ySim3, xSim3, pSim3] = SimSEIR(13, cases{3}, stateInitType{2}, dt, 100);  % Simulation 3  
 % save('Sim1.mat','ySim1','xSim1','pSim1')
 % save('Sim2.mat','ySim2','xSim2','pSim2');
 % save('Sim3.mat','ySim3','xSim3','pSim3');
-load('Outputs\Sim1.mat');
-load('Outputs\Sim2.mat');
-load('Outputs\Sim3.mat');
-cambridge = readtable('Cambridge/cam.xlsx');
 
 %% Plot the SEIR proportions (area) vs. time and the animated SEIR curves.
 close all;
 f1 = figure(1);
-plotSEIRProp(f1,ySim1,xSim1,dt,'Simulation 1: Single Neighborhood');
-set(f1,'position',[10   128   945   801]);
-
-f2 = figure(2);
-animationSpeed = 0.5;
-animateSEIR(f2,ySim1,animationSpeed,'Simulation 1: Single Neighborhood',dt);
+plotSEIRProp(f1,ySim1,xSim1,dt,'Simulation 1: Single Neighborhood, Proportions');
+set(f1,'position',[1049 612 740 360]);
 
 % Add plot for validation
+f11 = figure(11);
+imshow('Live-Demo\Comparison-Plot.jpg');
+title('Reference: Y. Fang et al., J. Med. Virol. 92(6), 645–659 (2020)');
+set(gcf,'position',[1049 83 741 440]);
 
+f2 = figure(2);
+animationSpeed = 1;
+animateSEIR(f2,ySim1,animationSpeed,'Simulation 1: Single Neighborhood',dt);
 
 %% Cambridge map
 f10 = figure(10);
@@ -51,10 +53,13 @@ geovisSEIR(f3,xSim2,dt,pSim2,0.5,false,'Sim 2 (No Measures)',cambridge,pos);
 %% Connections
 close all;
 f4 = figure(4);
-geovisSEIR(f4,xSim2,dt,pSim2,1,true,'Sim 2 (No Measures)',cambridge,[10   128   945   801]);
+geovisSEIR(f4,xSim2,dt,pSim2,1,true,'Sim 2 \theta_{ij} (No Measures)',cambridge,[10   128   945   801]);
 
-f5 = figure(5);
-geovisSEIR(f5,xSim3,dt,pSim3,1,true,'Sim 3 (With Measures)',cambridge,[956   128   945   801]);
+% f5 = figure(5);
+openfig('Live-Demo\Connections-Sim3');
+% geovisSEIR(f5,xSim3,dt,pSim3,1,true,'Sim 3 \theta_{ij} (With Measures)',cambridge,[956   128   945   801]);
+
+% 0.542798941798943,0.237203495630462,0.038153439153439,0.047440699126092
 
 %% Geobubble 3
 close all;
