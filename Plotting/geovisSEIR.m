@@ -44,6 +44,8 @@ else
         bnodes.SizeData = xI(:,i);
         bnodes.SizeLegendTitle = '# Infected';
         title([figTitle sprintf(', Cambridge, MA, t = %.0f days',i*dt)]);
+% 		title(sprintf('t = %.0f days',i*dt),'FontSize',20);
+		bnodes.FontSize = 24;
         grid off;
         drawnow;
     end
