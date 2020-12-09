@@ -111,3 +111,6 @@ for caseNum = 1 : length(cases)
 	end
 	close(writerObj);
 end
+
+%% Plot validation data
+formatFig(f2,[321   114   725   411],[0 20000 40000 60000 80000 100000 120000]);

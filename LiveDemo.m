@@ -17,9 +17,9 @@ cambridge = readtable('Cambridge/cam.xlsx');
 % [ySim1, xSim1, pSim1] = SimSEIR(1,  cases{4}, stateInitType{3}, dt, 200);  % Simulation 1: Simple SEIR model, single neighborhood
 % [ySim2, xSim2, pSim2] = SimSEIR(13, cases{2}, stateInitType{2}, dt, 100);  % Simulation 2
 % [ySim3, xSim3, pSim3] = SimSEIR(13, cases{3}, stateInitType{2}, dt, 100);  % Simulation 3  
-% save('Sim1.mat','ySim1','xSim1','pSim1')
-% save('Sim2.mat','ySim2','xSim2','pSim2');
-% save('Sim3.mat','ySim3','xSim3','pSim3');
+% save('Live-Demo\Sim1.mat','ySim1','xSim1','pSim1')
+% save('Live-Demo\Sim2.mat','ySim2','xSim2','pSim2');
+% save('Live-Demo\Sim3.mat','ySim3','xSim3','pSim3');
 
 %% Plot the SEIR proportions (area) vs. time and the animated SEIR curves.
 close all;
@@ -74,10 +74,12 @@ plotSEIRProp(f7,ySim2,xSim2,dt);
 set(f7,'position',[17    82   595   905]);
 sgtitle('Simulation 2: No Measures, Neighborhood Breakdown');
 
-f8 = figure(8);
-plotSEIRProp(f8,ySim3,xSim3,dt);
+
+% plotSEIRProp(f8,ySim3,xSim3,dt);
+% sgtitle('Simulation 3: Measures, Neighborhood Breakdown');
+% f8 = figure(8);
+f8 = openfig('Live-Demo\Fig8.fig');
 set(f8,'position',[618    82   595   905]);
-sgtitle('Simulation 3: Measures, Neighborhood Breakdown');
 
 f9 = figure(9);
 compareSEIR(f9,ySim2,ySim3,dt);
