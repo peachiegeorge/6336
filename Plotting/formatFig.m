@@ -1,7 +1,8 @@
-function formatFig(f)
+function formatFig(f,pos)
 % Set font sizes
-f.CurrentAxes.FontSize = 20
-set(f,'Position', [680   558   560   420]);
+f.CurrentAxes.FontSize = 20;
+set(f,'Position', pos);
+f.CurrentAxes.Title.String = {};   % Remove title
 % Set linewidths to 2
 if ~isempty(f.Children(2).Children(1))
 	f.Children(2).Children(1).LineWidth = 2;

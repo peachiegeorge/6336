@@ -24,7 +24,7 @@ cambridge = readtable('Cambridge/cam.xlsx');
 %% Plot the SEIR proportions (area) vs. time and the animated SEIR curves.
 close all;
 f1 = figure(1);
-plotSEIRProp(f1,ySim1,xSim1,dt,'Simulation 1: Single Neighborhood, Proportions');
+plotSEIRProp(f1,ySim1,xSim1,dt,'Simulation 1: Single Neighborhood, Proportions',true);
 set(f1,'position',[1049 612 740 360]);
 
 % Add plot for validation
